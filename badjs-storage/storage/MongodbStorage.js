@@ -1,29 +1,30 @@
-var MongoClient = require('mongodb').MongoClient,
-    http = require('http'),
-    map = require('map-stream');
+const MongoClient = require('mongodb').MongoClient;
+const http = require('http');
+const map = require('map-stream');
 
-var log4js = require('log4js'),
-    logger = log4js.getLogger();
+const log4js = require('log4js');
+const logger = log4js.getLogger();
+const monitor = require('../service/monitor');
 
-var realTotal = require('../service/realTotalMaster');
+const realTotal = require('../service/realTotalMaster');
 
-var mongoDB, adminMongoDB;
+let mongoDB, adminMongoDB;
 
 
-var hadCreatedCollection = {};
+const hadCreatedCollection = {};
 
-var tryInit = function (db, collectionName, cb) {
+const tryInit = function (db, collectionName, cb) {
     if (hadCreatedCollection[collectionName] === 'ping') {
         return;
     }
     if (hadCreatedCollection[collectionName] === true) {
-        var collection = db.collection(collectionName);
+        const collection = db.collection(collectionName);
         cb(null, collection);
         return true;
     }
 
     hadCreatedCollection[collectionName] = 'ping';
-    db.createCollection(collectionName, function (err, collection) {
+    db.createCollection(collectionName, { capped: true, size: 1000000, max: 5000 }, function (err, collection) {
         collection.indexExists('date_-1_level_1', function (errForIE, result) {
             if (errForIE) {
                 throw errForIE;
@@ -61,9 +62,9 @@ var tryInit = function (db, collectionName, cb) {
     });
 };
 
-var hadCreatedUINCollection = {};
+const hadCreatedUINCollection = {};
 
-var createUinIndex = function (collection, collectionName, cb) {
+const createUinIndex = function (collection, collectionName, cb) {
     if (hadCreatedUINCollection[collectionName] === 'ping') {
         return;
     }
@@ -94,19 +95,17 @@ var createUinIndex = function (collection, collectionName, cb) {
 };
 
 
-var insertDocuments = function (db, model) {
-    var collectionName = 'badjslog_' + model.id;
+const insertDocuments = function (db, model) {
+    const collectionName = 'badjslog_' + model.id;
 
     tryInit(db, collectionName, function (err, collection) {
         createUinIndex(collection, collectionName, function (error, coll) {
             coll.insert([
                 model.model
             ], function (err, result) {
-                if (global.debug) {
-                    logger.debug('save one log : ' + JSON.stringify(model.model));
-                }
-
                 if (err) {
+                    monitor(34471884); // [ivweb-aegis] mongodb插入失败
+                    console.log('badjs-storage insert documents err', err);
                     errorNum++;
                 } else {
                     count++;
@@ -141,7 +140,7 @@ if (global.MONGODB.isShard) {
 
 module.exports = function () {
     return map(function (data) {
-        var dataStr = data.toString();
+        const dataStr = data.toString();
         try {
             data = JSON.parse(dataStr.substring(dataStr.indexOf(' ')));
         } catch (e) {
@@ -163,11 +162,11 @@ module.exports = function () {
             logger.info('cannot connect mongodb');
             return;
         }
-        var id = data.id;
+        const id = data.id;
         delete data.id;
 
-        var all = '';
-        for (var key in data) {
+        let all = '';
+        for (const key in data) {
             all += ';' + key + '=' + data[key];
         }
         data.all = all;
@@ -184,7 +183,7 @@ module.exports = function () {
     });
 };
 
-var count = 0, errorNum = 0;
+let count = 0, errorNum = 0;
 http.createServer((req, res) => {
     res.end(`${count},${errorNum}`);
     count = 0;
