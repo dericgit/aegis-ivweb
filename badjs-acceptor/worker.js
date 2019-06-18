@@ -32,7 +32,7 @@ const forbiddenData = '403 forbidden';
 
 const responseHeader = {
     'Access-Control-Allow-Origin': '*',
-    'Content-Type': 'image/jpeg',
+    'Content-Type': 'text/plain',
     Connection: 'close'
 };
 
@@ -198,7 +198,6 @@ function writeOfflineLog(offline_log) {
  * @returns {boolean}
  */
 const referer_match = function(id, req) {
-    return true
     const referer = (((req || {}).headers || {}).referer || '').toString();
 
     const projectMatchDomain = (global.projectsInfo[id.toString()] || {}).domain;
@@ -219,6 +218,22 @@ function reponseReject(res, responseHeader) {
     res.writeHead(403, responseHeader);
     res.write(forbiddenData);
     res.end('');
+}
+
+function badRequest(res, reason) {
+    res.set(responseHeader);
+    res.status(400).end(reason);
+}
+
+function checkReportID(id, req) {
+    if (isNaN(id) || id <= 0 || id >= 9999) {
+        return [false, '无效的id参数'];
+    } else if (!global.projectsInfo[id]) {
+        return [false, '没有找到对应的项目信息'];
+    } else if (!referer_match(id, req)) {
+        return [false, 'referer 跟登记的不一致'];
+    }
+    return [true];
 }
 
 /* -------------------------------------------------------------------------- */
@@ -349,14 +364,9 @@ app.use('/badjs/offlineLog', function(req, res) {
 
         const id = param.id - 0;
 
-        if (isNaN(id)) {
-            return reponseReject(res, responseHeader);
-        }
-
-        if (id <= 0 || id >= 9999 || !global.projectsInfo[id + ''] || !referer_match(id, req)) {
-            const referer = (((req || {}).headers || {}).referer || '').toString();
-            // console.log('error badjsid: ', id, referer, req.url);
-            return reponseReject(res, responseHeader);
+        const [pass, reason] = checkReportID(id, req);
+        if (!pass) {
+            return badRequest(res, reason);
         }
 
         param.id = id;
@@ -367,11 +377,11 @@ app.use('/badjs/offlineLog', function(req, res) {
                 data: param
             });
         } catch (err) {
-            return reponseReject(res, responseHeader);
+            return badRequest(res, err.message);
         }
 
         if (req.throwError) {
-            return reponseReject(res, responseHeader);
+            return badRequest(res, req.throwError);
         }
 
         // responseHeader end with 204
