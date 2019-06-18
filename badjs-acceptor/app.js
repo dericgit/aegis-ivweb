@@ -4,6 +4,8 @@ const path = require('path');
 const cluster = require('cluster');
 const log4js = require('log4js');
 const logger = log4js.getLogger();
+// 必须在 master 中执行 clusterhub 模块，才能使用 clusterhub 在 worker 间通信
+require('clusterhub');
 
 const argv = process.argv.slice(2);
 
