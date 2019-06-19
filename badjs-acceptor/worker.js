@@ -214,8 +214,7 @@ const referer_match = function(id, req) {
     return typeof global.projectsInfo === 'object' && domain.indexOf(projectMatchDomain) !== -1;
 };
 
-function badRequest(res, reason) {
-    logger.warn('bad request:', reason);
+function badRequest(res) {
     responseHeader['Content-length'] = forbiddenData.length;
     res.writeHead(403, responseHeader);
     res.write(forbiddenData);
@@ -224,11 +223,14 @@ function badRequest(res, reason) {
 
 function checkReportID(id, req) {
     if (isNaN(id) || id <= 0 || id >= 9999) {
-        return [false, '无效的id参数'];
+        logger.warn('bad request:', 'id', '无效的id参数');
+        return false;
     } else if (!global.projectsInfo[id]) {
-        return [false, '没有找到对应的项目信息'];
+        logger.warn('bad request:', 'id', '没有找到对应的项目信息');
+        return false;
     } else if (!referer_match(id, req)) {
-        return [false, 'referer 跟登记的不一致'];
+        logger.warn('bad request:', 'id', 'referer 跟登记的不一致');
+        return false;
     }
     return [true];
 }
@@ -361,9 +363,9 @@ app.use('/badjs/offlineLog', function(req, res) {
 
         const id = param.id - 0;
 
-        const [pass, reason] = checkReportID(id, req);
+        const pass = checkReportID(id, req);
         if (!pass) {
-            return badRequest(res, reason);
+            return badRequest(res);
         }
 
         param.id = id;
@@ -374,11 +376,11 @@ app.use('/badjs/offlineLog', function(req, res) {
                 data: param
             });
         } catch (err) {
-            return badRequest(res, err.message);
+            return badRequest(res);
         }
 
         if (req.throwError) {
-            return badRequest(res, req.throwError);
+            return badRequest(res);
         }
 
         // responseHeader end with 204
