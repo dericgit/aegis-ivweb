@@ -1,8 +1,15 @@
 const request = require('request');
+const moment = require('moment');
 const mail = require('../utils/ivwebMail_for_single.js');
 
-let INTERVAL = 2;
+let INTERVAL = 2; // 分钟
 let mailed = false;
+let EMAIL_INTERVAL = 30; // 分钟
+let emailMap = {};
+
+const formatDate = function (str) {
+    return moment(str).format('YYYY-MM-DD hh:mm');
+}
 
 module.exports = function () {
     setTimeout(() => {
@@ -25,12 +32,11 @@ module.exports = function () {
                         userService.queryMailByApplyId(id, function (err, data) {
                             const email = data[0].email;
                             const loginName = data[0].loginName;
-                            const msg = `Aegis数据上报异常 - 检测到 aegis id: ${id} owner: ${loginName} 最近${INTERVAL}分钟没有数据上报，服务或者项目可能存在异常，请及时检查`;
-                            if (!mailed) {
-                                mailed = true;
-                                let { errorMailTo } = global.pjconfig;
-                                mail('', `${errorMailTo},${email}`, '', 'Aegis数据上报异常', msg, '', true);
-                            }
+                            const msg = `Aegis数据上报异常 - 检测到 aegis id: ${id} (owner: ${loginName}) 从${formatDate(startDate)}到${formatDate(endDate)}没有数据上报，服务或者项目可能存在异常，请及时检查`;
+                            emailMap[id] = {
+                                email,
+                                msg
+                            };
                             request({
                                 url,
                                 method: 'POST',
@@ -66,8 +72,21 @@ module.exports = function () {
                     TIMER = setInterval(job, INTERVAL * 60 * 1000);
                 }
             }
-            mailed = false;
         }, 10 * 60 * 1000);
+
+        // 每隔一个小时发一次邮件
+        setInterval(() => {
+            let { errorMailTo } = global.pjconfig;
+            let msgs = [];
+            for (let k in emailMap) {
+                let v = emailMap[k];
+                errorMailTo += `,${v.email}`;
+            }
+            if (msgs.length) {
+                mail('', errorMailTo, '', 'Aegis数据上报异常', msgs.join(''), '', true);
+            }
+            emailMap = {};
+        }, 60 * 60 * 1000);
     }, 3000);
 };
 
