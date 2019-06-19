@@ -85,13 +85,15 @@ async function quantityLimitNotify(projectID, quantityLimit, isHalfNotify) {
     const halfText = quantityLimit / 2 / 10000 + 'w';
     const totalText = quantityLimit / 10000 + 'w';
 
+    const hour = new Date().getHours();
+    const minute = (new Date().getMinutes() + '').padStart(2, '0');
+
     const message =
         (isHalfNotify
-            ? `#### Aegis 1小时内项目上报数量超过${halfText}条异常提示\n\n`
-            : `#### Aegis 1小时内项目上报数量超过${totalText}条丢弃告警\n\n`) +
+            ? `#### Aegis 1小时内(${hour}:00 - ${hour}:${minute})项目上报数量超过${halfText}条异常提示\n\n`
+            : `#### Aegis 1小时内(${hour}:00 - ${hour}:${minute})项目上报数量超过${totalText}条丢弃告警\n\n`) +
         `> ${projectID} - ${name} - ${owner}\n` +
-        `\n（限制策略：1小时内，上报超过${halfText}条将提示异常，超过${totalText}条将丢弃上报并告警。每隔1小时重置记录）` +
-        '\n进入 [Aegis](https://aegis.ivweb.io) 定位问题。';
+        `\n限制策略：1小时内，上报超过${halfText}条将提示异常，超过${totalText}条将丢弃上报并告警。每隔1小时重置记录` ;
 
     return wechatNotify({
         robotKey,
