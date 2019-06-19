@@ -3,12 +3,21 @@ const moment = require('moment');
 const mail = require('../utils/ivwebMail_for_single.js');
 
 let INTERVAL = 2; // 分钟
-let mailed = false;
-let EMAIL_INTERVAL = 30; // 分钟
+let EMAIL_INTERVAL = 60; // 分钟
 let emailMap = {};
 
 const formatDate = function (str) {
     return moment(str).format('YYYY-MM-DD hh:mm');
+}
+
+const constructEmail = function (items) {
+    const html = ['<html><body>'];
+    items.forEach(item => {
+        html.push(`<h3>${items.msg}</h3>`);
+    });
+
+    html.push('</body></html>');
+    return html.join('');
 }
 
 module.exports = function () {
@@ -27,7 +36,7 @@ module.exports = function () {
                 const startDate = endDate - INTERVAL * 60 * 1000;
 
                 logService.query({ id, startDate, endDate, 'level[]': 2, _t: +new Date() }, function (err, items) {
-                    console.log(`ping 检测, id: ${id}, 检测插入数据${items.length}条`);
+                    console.log(`${formatDate(new Date())} ping 检测, id: ${id}, 检测插入数据${items.length}条`);
                     if (!items.length) {
                         userService.queryMailByApplyId(id, function (err, data) {
                             const email = data[0].email;
@@ -74,19 +83,23 @@ module.exports = function () {
             }
         }, 10 * 60 * 1000);
 
-        // 每隔一个小时发一次邮件
         setInterval(() => {
             let { errorMailTo } = global.pjconfig;
             let msgs = [];
             for (let k in emailMap) {
                 let v = emailMap[k];
-                errorMailTo += `,${v.email}`;
+                if (!errorMailTo.includes(v.email)) {
+                    errorMailTo += `,${v.email}`;
+                }
+                msgs.push(v.msg);
             }
+            console.log('send aegis ping error mail to: ', errorMailTo);
             if (msgs.length) {
-                mail('', errorMailTo, '', 'Aegis数据上报异常', msgs.join(''), '', true);
+                const html = constructEmail(msgs);
+                mail('', errorMailTo, '', 'Aegis数据上报异常', html, '', true);
             }
             emailMap = {};
-        }, 60 * 60 * 1000);
+        }, EMAIL_INTERVAL * 60 * 1000);
     }, 3000);
 };
 
