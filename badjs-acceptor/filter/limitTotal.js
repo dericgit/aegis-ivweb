@@ -31,6 +31,8 @@ const runIntervalClear = function() {
 
 logger.info('after ' + (endDate - new Date()) + ' run limit monitor clear');
 setTimeout(function() {
+    logger.info(`[${process.pid}] clear report records.`);
+    reportRecord = {};
     runIntervalClear();
 }, endDate - new Date());
 
