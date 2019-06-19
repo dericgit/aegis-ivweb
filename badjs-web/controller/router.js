@@ -19,7 +19,7 @@ var LogAction = require('./action/LogAction'),
     upload = require('./sourcemap');
 
 var _ = require("underscore");
-
+const QQConnect = require('../lib/QQConnect');
 
 var log4js = require('log4js'),
     logger = log4js.getLogger();
@@ -28,8 +28,63 @@ module.exports = function (app) {
     realtimeService(app);
 
     app.get('/', function (req, res) {
-        res.setHeader('Content-Type', 'text/html');
-        res.sendFile(`${global.pjconfig.http_public}/index.html`);
+        const code = req.query.code;
+        const userDao = req.models.userDao;
+
+        QQConnect.code2openid(
+            code || '', 'https://aegis.ivweb.io'
+        ).then(openid => {
+            if (!openid) {
+                return res.json({
+                    code: 500,
+                    error: 'OPENID_REQUEST_ERROR',
+                    message: 'openid 请求失败，请重试'
+                });
+            }
+            userDao.one({ openid }, (err, user) => {
+                if (err) {
+                    res.json({
+                        code: 500,
+                        error: 'SQL_QUERY_ERROR',
+                        message: '查询失败，请重试'
+                    });
+                } else if (!user) {
+                    // 此步说明数据库中不存在这个 openid 须进一步创建
+                    res.redirect(`https://aegis.ivweb.io/#/auth/?openid=${openid}`);
+                } else {
+                    QQConnect.getUserInfoByOpenid().then((user_info) => {
+                        try {
+                            if (user_info) {
+                                user_info = JSON.parse(user_info);
+                            } else {
+                                user_info = {
+                                    figureurl_qq_2: ''
+                                };
+                            }
+                        } catch (e) {
+    
+                        }
+    
+                        req.session.user = {
+                            role: user.role,
+                            id: user.id,
+                            email: user.email,
+                            loginName: user.loginName,
+                            chineseName: user.chineseName,
+                            avatar: user_info.figureurl_qq_2 || '',
+                            verify_state: parseInt(user.verify_state, 10),
+                            openid: user.openid
+                        };
+                        res.redirect(`https://aegis.ivweb.io/#/auth/?openid=${user.openid}&result=${encodeURIComponent(JSON.stringify(req.session.user))}`);
+                    });
+                }
+            });
+        }).catch(error => {
+            res.json({
+                code: 500, error,
+                message: '请求失败'
+            });
+        });
     });
 
     app.get('/index.html', function (req, res, next) {
