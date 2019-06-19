@@ -28,8 +28,8 @@ module.exports = function () {
                             const msg = `Aegis数据上报异常 - 检测到 aegis id: ${id} owner: ${loginName} 最近${INTERVAL}分钟没有数据上报，服务或者项目可能存在异常，请及时检查`;
                             if (!mailed) {
                                 mailed = true;
-                                let { ownerMailTo } = global.pjconfig;
-                                mail('', `${ownerMailTo},${email}`, '', 'Aegis数据上报异常', msg, '', true);
+                                let { errorMailTo } = global.pjconfig;
+                                mail('', `${errorMailTo},${email}`, '', 'Aegis数据上报异常', msg, '', true);
                             }
                             request({
                                 url,
