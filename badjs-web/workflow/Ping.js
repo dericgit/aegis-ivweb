@@ -13,7 +13,7 @@ const formatDate = function (str) {
 const constructEmail = function (items) {
     const html = ['<html><body>'];
     items.forEach(item => {
-        html.push(`<h3>${items.msg}</h3>`);
+        html.push(`<h3>${items}</h3>`);
     });
 
     html.push('</body></html>');
@@ -41,7 +41,7 @@ module.exports = function () {
                         userService.queryMailByApplyId(id, function (err, data) {
                             const email = data[0].email;
                             const loginName = data[0].loginName;
-                            const msg = `Aegis数据上报异常 - 检测到 aegis id: ${id} (owner: ${loginName}) 从${formatDate(startDate)}到${formatDate(endDate)}没有数据上报，服务或者项目可能存在异常，请及时检查`;
+                            const msg = `Aegis数据上报异常 - 检测到 aegis id: ${id} (owner: ${loginName}) 从 ${formatDate(startDate)} 到 ${formatDate(endDate)} 没有数据上报，服务或者项目可能存在异常，请及时检查`;
                             emailMap[id] = {
                                 email,
                                 msg
