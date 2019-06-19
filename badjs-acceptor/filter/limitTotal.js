@@ -6,7 +6,7 @@ const logger = log4js.getLogger();
 const { quantityLimitNotify } = require('../service');
 
 const WORKERS_NUM = 4;
-const QUANTITY_LIMIT = 10;
+const QUANTITY_LIMIT = 100000;
 let reportRecord = {};
 
 // 在多个 worker 进程中共享 reportRecord 的 notify flag，实现只在一个 worker 中发送告警
