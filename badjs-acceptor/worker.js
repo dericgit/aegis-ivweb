@@ -8,6 +8,7 @@ const multipart = require('connect-multiparty');
 const interceptor = require('c-interceptor')();
 const log4js = require('log4js');
 const logger = log4js.getLogger();
+const path = require('path');
 
 const monitor = require('./monitor');
 
@@ -213,16 +214,12 @@ const referer_match = function(id, req) {
     return typeof global.projectsInfo === 'object' && domain.indexOf(projectMatchDomain) !== -1;
 };
 
-function reponseReject(res, responseHeader) {
+function badRequest(res, reason) {
+    logger.warn('bad request:', reason);
     responseHeader['Content-length'] = forbiddenData.length;
     res.writeHead(403, responseHeader);
     res.write(forbiddenData);
     res.end('');
-}
-
-function badRequest(res, reason) {
-    res.set(responseHeader);
-    res.status(400).end(reason);
 }
 
 function checkReportID(id, req) {
