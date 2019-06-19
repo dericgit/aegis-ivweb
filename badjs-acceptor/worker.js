@@ -223,13 +223,13 @@ function badRequest(res) {
 
 function checkReportID(id, req) {
     if (isNaN(id) || id <= 0 || id >= 9999) {
-        logger.warn('bad request:', 'id', '无效的id参数');
+        logger.warn('bad request:', id, '无效的id参数');
         return false;
     } else if (!global.projectsInfo[id]) {
-        logger.warn('bad request:', 'id', '没有找到对应的项目信息');
+        logger.warn('bad request:', id, '没有找到对应的项目信息');
         return false;
     } else if (!referer_match(id, req)) {
-        logger.warn('bad request:', 'id', 'referer 跟登记的不一致');
+        logger.warn('bad request:', id, 'referer 跟登记的不一致');
         return false;
     }
     return [true];
