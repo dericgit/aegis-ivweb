@@ -9,34 +9,34 @@ const UserService = require('../../service/UserService');
 
 module.exports = router;
 
-router.post('/login', function (req, res) {
-    const userDao = req.models.userDao;
-
-    userDao.one({ loginName: req.body.username }, (err, user) => {
-        if (err || !user || (crypto.createHash("md5").update(req.body.password).digest('hex') != user.password)) {
-            res.json({
-                code: 1100,
-                error: 'LOGIN_ERR',
-                message: '登陆失败，请检查账号密码'
-            });
-        } else {
-            req.session.user = {
-                role: user.role,
-                id: user.id,
-                email: user.email,
-                loginName: user.loginName,
-                chineseName: user.chineseName,
-                verify_state: parseInt(user.verify_state, 10),
-                openid: user.openid
-            };
-
-            res.json({
-                code: 0,
-                message: '登陆成功'
-            });
-        }
-    });
-});
+// router.post('/login', function (req, res) {
+//     const userDao = req.models.userDao;
+//
+//     userDao.one({ loginName: req.body.username }, (err, user) => {
+//         if (err || !user || (crypto.createHash("md5").update(req.body.password).digest('hex') != user.password)) {
+//             res.json({
+//                 code: 1100,
+//                 error: 'LOGIN_ERR',
+//                 message: '登陆失败，请检查账号密码'
+//             });
+//         } else {
+//             req.session.user = {
+//                 role: user.role,
+//                 id: user.id,
+//                 email: user.email,
+//                 loginName: user.loginName,
+//                 chineseName: user.chineseName,
+//                 verify_state: parseInt(user.verify_state, 10),
+//                 openid: user.openid
+//             };
+//
+//             res.json({
+//                 code: 0,
+//                 message: '登陆成功'
+//             });
+//         }
+//     });
+// });
 
 router.get('/update_session', function (req, res) {
     const userDao = req.models.userDao;
@@ -54,6 +54,7 @@ router.get('/update_session', function (req, res) {
             error: 'LOGIN_ERR',
             message: '登陆失败，请检查账号'
         });
+
 
         req.session.user = {
             role: user.role,

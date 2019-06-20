@@ -79,7 +79,7 @@ var StatisticsAction = {
             return;
         }
         statisticsService.queryByChart({
-            userName: param.user.loginName,
+            userName: req.session.user.loginName,
             projectId: param.projectId - 0,
             timeScope: param.timeScope - 0
         }, function (err, data) {
@@ -95,7 +95,7 @@ var StatisticsAction = {
     },
     queryByChartForAdmin: function (param, req, res) {
         var statisticsService = new StatisticsService();
-        if (!param.projectId || isNaN(param.projectId) || !param.timeScope || param.user.role != 1) {
+        if (!param.projectId || isNaN(param.projectId) || !param.timeScope || req.session.user.role != 1) {
             res.json({
                 ret: 0,
                 msg: 'success',
@@ -131,7 +131,7 @@ var StatisticsAction = {
         }
         var startDate = new Date(param.startDate + ' 00:00:00');
         statisticsService.queryById({
-            userName: param.user.loginName,
+            userName: req.session.user.loginName,
             projectId: req.query.projectId - 0,
             startDate
         }, function (err, data) {

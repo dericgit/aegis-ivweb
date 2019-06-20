@@ -23,7 +23,7 @@ var EmailService = function () {
     this.statisticsService = new StatisticsService();
     this.top = parseInt(global.pjconfig.email.top, 10) || 20;
     this.from = global.pjconfig.email.from || "xx@xx.com";
-    this.homepage = global.pjconfig.email.homepage;
+    this.homepage = global.pjconfig.homepage;
     this.host = global.pjconfig.host;
 };
 

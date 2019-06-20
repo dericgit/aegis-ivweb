@@ -23,6 +23,7 @@ const QQConnect = require('../lib/QQConnect');
 
 var log4js = require('log4js'),
     logger = log4js.getLogger();
+const homePage = global.pjConfig.homepage;
 
 module.exports = function (app) {
     realtimeService(app);
@@ -32,7 +33,7 @@ module.exports = function (app) {
         const userDao = req.models.userDao;
 
         QQConnect.code2openid(
-            code || '', 'https://aegis.ivweb.io'
+            code || '', homePage
         ).then(openid => {
             if (!openid) {
                 return res.json({
@@ -53,29 +54,27 @@ module.exports = function (app) {
                     res.redirect(`https://aegis.ivweb.io/#/auth/?openid=${openid}`);
                 } else {
                     QQConnect.getUserInfoByOpenid().then((user_info) => {
-                        try {
-                            if (user_info) {
+                        if (user_info) {
+                            try {
                                 user_info = JSON.parse(user_info);
-                            } else {
-                                user_info = {
-                                    figureurl_qq_2: ''
-                                };
+                            } catch (e) {
+                                throw e;
                             }
-                        } catch (e) {
-    
+
+                            req.session.user = {
+                                role: user.role,
+                                id: user.id,
+                                email: user.email,
+                                loginName: user.loginName,
+                                chineseName: user.chineseName,
+                                avatar: user_info.figureurl_qq_2 || '',
+                                verify_state: parseInt(user.verify_state, 10),
+                                openid: user.openid
+                            };
+                            res.redirect(`https://aegis.ivweb.io/#/auth/?openid=${user.openid}&result=${encodeURIComponent(JSON.stringify(req.session.user))}`);
+                        } else {
+                            throw new Error();
                         }
-    
-                        req.session.user = {
-                            role: user.role,
-                            id: user.id,
-                            email: user.email,
-                            loginName: user.loginName,
-                            chineseName: user.chineseName,
-                            avatar: user_info.figureurl_qq_2 || '',
-                            verify_state: parseInt(user.verify_state, 10),
-                            openid: user.openid
-                        };
-                        res.redirect(`https://aegis.ivweb.io/#/auth/?openid=${user.openid}&result=${encodeURIComponent(JSON.stringify(req.session.user))}`);
                     });
                 }
             });
@@ -113,14 +112,15 @@ module.exports = function (app) {
     //     }
     // });
 
-    app.use('/upload.html', function (req, res, next) {
-        var user = req.session.user;
-        if (user && user.id) {
-            res.render('upload', {});
-        } else {
-            res.redirect('/user/index.html');
-        }
-    });
+    //
+    // app.use('/upload.html', function (req, res, next) {
+    //     var user = req.session.user;
+    //     if (user && user.id) {
+    //         res.render('upload', {});
+    //     } else {
+    //         res.redirect('/user/index.html');
+    //     }
+    // });
 
     app.use('/register.html', function (req, res) {
         UserAction.register({}, req, res);
@@ -221,8 +221,6 @@ module.exports = function (app) {
         var params = method == "post" ? req.body : req.query;
 
         params = _.extend({}, params);
-
-        params.user = req.session.user;
 
         if (!params.user) {
             res.json({ ret: -2, msg: "should login" });

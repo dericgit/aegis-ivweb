@@ -1,5 +1,6 @@
 {
-    "host" : "http://badjs.server.com/",
+    "host" : "https://aegis.ivweb.io",
+    "homepage": "https://aegis.ivweb.io",
     "port": 8081,
     "mysql" : {
         "url" : "mysql://root:root@localhost:3306/badjs"
@@ -25,7 +26,6 @@
     "wechat": "",
     "wechat_ping": "",
     "email": {
-        "homepage": "http://aegis.ivweb.io/user/index.html",
         "from": "noreply-badjs@demo.com",
         "emailSuffix" : "@demo.com",
         "smtp": "smtp.demo.com",

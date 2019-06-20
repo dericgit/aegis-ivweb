@@ -20,10 +20,9 @@ var log4js = require('log4js'),
 
 var userAction = {
     index: function (params, req, res) {
-        var params = req.query,
-            user = req.session.user;
+        const user = req.session.user;
 
-        var businessService = new BusinessService();
+        const businessService = new BusinessService();
 
         if (user.role == 1) {
             businessService.findBusiness(function (err, item) {
