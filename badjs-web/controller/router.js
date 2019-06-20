@@ -22,7 +22,6 @@ const upload = require('./sourcemap');
 const pjConfig = require('../project.json');
 
 const _ = require("underscore");
-const QQConnect = require('../lib/QQConnect');
 
 const log4js = require('log4js');
 const logger = log4js.getLogger();
@@ -32,61 +31,8 @@ module.exports = function (app) {
     realtimeService(app);
 
     app.get('/', function (req, res) {
-        const code = req.query.code;
-        const userDao = req.models.userDao;
-
-        QQConnect.code2openid(
-            code || '', homePage
-        ).then(openid => {
-            if (!openid) {
-                return res.json({
-                    code: 500,
-                    error: 'OPENID_REQUEST_ERROR',
-                    message: 'openid 请求失败，请重试'
-                });
-            }
-            userDao.one({ openid }, (err, user) => {
-                if (err) {
-                    res.json({
-                        code: 500,
-                        error: 'SQL_QUERY_ERROR',
-                        message: '查询失败，请重试'
-                    });
-                } else if (!user) {
-                    // 此步说明数据库中不存在这个 openid 须进一步创建
-                    res.redirect(`${homePage}/#/auth/?openid=${openid}`);
-                } else {
-                    QQConnect.getUserInfoByOpenid().then((user_info) => {
-                        if (user_info) {
-                            try {
-                                user_info = JSON.parse(user_info);
-                            } catch (e) {
-                                throw e;
-                            }
-
-                            req.session.user = {
-                                role: user.role,
-                                id: user.id,
-                                email: user.email,
-                                loginName: user.loginName,
-                                chineseName: user.chineseName,
-                                avatar: user_info.figureurl_qq_2 || '',
-                                verify_state: parseInt(user.verify_state, 10),
-                                openid: user.openid
-                            };
-                            res.redirect(`${homePage}/#/auth/?openid=${user.openid}&result=${encodeURIComponent(JSON.stringify(req.session.user))}`);
-                        } else {
-                            throw new Error();
-                        }
-                    });
-                }
-            });
-        }).catch(error => {
-            res.json({
-                code: 500, error,
-                message: '请求失败'
-            });
-        });
+        res.setHeader('Content-Type', 'text/html');
+        res.sendFile(`${global.pjconfig.http_public}/index.html`);
     });
 
     app.get('/index.html', function (req, res, next) {

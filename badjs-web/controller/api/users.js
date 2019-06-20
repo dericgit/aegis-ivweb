@@ -2,8 +2,75 @@
 
 const express = require('express');
 const router = express.Router();
+const QQConnect = require('../../lib/QQConnect');
 
 module.exports = router;
+
+/**
+ * 用 code 登陆
+ */
+router.post('/login-by-code', function (req, res) {
+    const userDao = req.models.userDao;
+
+    QQConnect.code2openid(
+        req.body.code || '', req.body.redirect_uri || ''
+    ).then(openid => {
+        if (!openid) {
+            return res.json({
+                code: 500,
+                error: 'OPENID_REQUEST_ERROR',
+                message: 'openid 请求失败，请重试'
+            });
+        }
+        userDao.one({ openid }, (err, user) => {
+            if (err) {
+                res.json({
+                    code: 500,
+                    error: 'SQL_QUERY_ERROR',
+                    message: '查询失败，请重试'
+                });
+            } else if (!user) {
+                // 此步说明数据库中不存在这个 openid 须进一步创建
+                res.json({
+                    code: 0,
+                    data: { openid },
+                    message: '请使用此值进行 openid 绑定'
+                });
+            } else {
+                QQConnect.getUserInfoByOpenid().then((user_info) => {
+                    if (user_info) {
+                        try {
+                            user_info = JSON.parse(user_info);
+                        } catch (e) {
+                            throw e;
+                        }
+
+                        req.session.user = {
+                            role: user.role,
+                            id: user.id,
+                            email: user.email,
+                            loginName: user.loginName,
+                            chineseName: user.chineseName,
+                            avatar: user_info.figureurl_qq_2 || '',
+                            verify_state: parseInt(user.verify_state, 10),
+                            openid: user.openid
+                        };
+                        // 说明有了，获取登陆态
+                        meAction(req, res);
+                    } else {
+                        throw new Error();
+                    }
+                });
+            }
+        });
+    }).catch(error => {
+        res.json({
+            code: 500, error,
+            message: '请求失败'
+        });
+    });
+});
+
 
 router.get('/update_session', function (req, res) {
     const userDao = req.models.userDao;
@@ -20,7 +87,7 @@ router.get('/update_session', function (req, res) {
             message: '登陆失败，请检查账号'
         });
 
-        if (user.verify_state ===2) {
+        if (user.verify_state === 2) {
             req.session.user = {
                 role: user.role,
                 id: user.id,
