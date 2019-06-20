@@ -10,7 +10,6 @@ var _ = require('underscore');
 var logger = require('log4js').getLogger();
 var UserService = require('./UserService');
 var dateFormat = require("../utils/dateFormat");
-var exporting = require('node-highcharts-exporting-v2');
 var StatisticsService = require('./StatisticsService');
 var scoreLib = require('../lib/getScore.js');
 var sendEmail = require("../utils/" + global.pjconfig.email.module);
@@ -233,6 +232,7 @@ EmailService.prototype = {
                                     } else {
                                         count++;
                                         setTimeout(function () {
+                                            var exporting = require('node-highcharts-exporting-v2');
                                             exporting(getImageData(name, chartData.data), function (err, image) {
                                                 if (err) {
                                                     logger.info("generate image error " + err.toString() + ", id =" + applyId);
