@@ -2,41 +2,8 @@
 
 const express = require('express');
 const router = express.Router();
-const crypto = require('crypto');
-const QQConnect = require('../../lib/QQConnect');
-const qs = require('querystring');
-const UserService = require('../../service/UserService');
 
 module.exports = router;
-
-// router.post('/login', function (req, res) {
-//     const userDao = req.models.userDao;
-//
-//     userDao.one({ loginName: req.body.username }, (err, user) => {
-//         if (err || !user || (crypto.createHash("md5").update(req.body.password).digest('hex') != user.password)) {
-//             res.json({
-//                 code: 1100,
-//                 error: 'LOGIN_ERR',
-//                 message: '登陆失败，请检查账号密码'
-//             });
-//         } else {
-//             req.session.user = {
-//                 role: user.role,
-//                 id: user.id,
-//                 email: user.email,
-//                 loginName: user.loginName,
-//                 chineseName: user.chineseName,
-//                 verify_state: parseInt(user.verify_state, 10),
-//                 openid: user.openid
-//             };
-//
-//             res.json({
-//                 code: 0,
-//                 message: '登陆成功'
-//             });
-//         }
-//     });
-// });
 
 router.get('/update_session', function (req, res) {
     const userDao = req.models.userDao;
@@ -46,8 +13,6 @@ router.get('/update_session', function (req, res) {
         code: -1, message: '请登录'
     });
 
-    // console.log('UserInfo Upadte Session', req.session);
-
     userDao.one({ loginName }, (err, user) => {
         if (!user) return res.json({
             code: 1100,
@@ -55,18 +20,21 @@ router.get('/update_session', function (req, res) {
             message: '登陆失败，请检查账号'
         });
 
+        if (user.verify_state ===2) {
+            req.session.user = {
+                role: user.role,
+                id: user.id,
+                email: user.email,
+                loginName: user.loginName,
+                chineseName: user.chineseName,
+                verify_state: parseInt(user.verify_state, 10),
+                openid: user.openid
+            };
 
-        req.session.user = {
-            role: user.role,
-            id: user.id,
-            email: user.email,
-            loginName: user.loginName,
-            chineseName: user.chineseName,
-            verify_state: parseInt(user.verify_state, 10),
-            openid: user.openid
-        };
-
-        meAction(req, res);
+            meAction(req, res);
+        } else {
+            res.redirect(`https://aegis.ivweb.io`);
+        }
     });
 });
 
@@ -163,73 +131,6 @@ router.post('/bind-openid', function (req, res) {
     });
 });
 
-/**
- * 用 code 登陆
- */
-router.post('/login-by-code', function (req, res) {
-    const userDao = req.models.userDao;
-
-    QQConnect.code2openid(
-        req.body.code || '', req.body.redirect_uri || ''
-    ).then(openid => {
-        if (!openid) {
-            return res.json({
-                code: 500,
-                error: 'OPENID_REQUEST_ERROR',
-                message: 'openid 请求失败，请重试'
-            });
-        }
-        userDao.one({ openid }, (err, user) => {
-            if (err) {
-                res.json({
-                    code: 500,
-                    error: 'SQL_QUERY_ERROR',
-                    message: '查询失败，请重试'
-                });
-            } else if (!user) {
-                // 此步说明数据库中不存在这个 openid 须进一步创建
-                res.json({
-                    code: 0,
-                    data: { openid },
-                    message: '请使用此值进行 openid 绑定'
-                });
-            } else {
-                QQConnect.getUserInfoByOpenid().then((user_info) => {
-                    try {
-                        if (user_info) {
-                            user_info = JSON.parse(user_info);
-                        } else {
-                            user_info = {
-                                figureurl_qq_2: ''
-                            };
-                        }
-                    } catch (e) {
-
-                    }
-
-                    req.session.user = {
-                        role: user.role,
-                        id: user.id,
-                        email: user.email,
-                        loginName: user.loginName,
-                        chineseName: user.chineseName,
-                        avatar: user_info.figureurl_qq_2 || '',
-                        verify_state: parseInt(user.verify_state, 10),
-                        openid: user.openid
-                    };
-
-                    // 说明有了，获取登陆态
-                    meAction(req, res);
-                });
-            }
-        });
-    }).catch(error => {
-        res.json({
-            code: 500, error,
-            message: '请求失败'
-        });
-    });
-});
 
 /**
  * 获取个人资料

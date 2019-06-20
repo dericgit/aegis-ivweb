@@ -54,7 +54,7 @@ module.exports = function (app) {
                     });
                 } else if (!user) {
                     // 此步说明数据库中不存在这个 openid 须进一步创建
-                    res.redirect(`https://aegis.ivweb.io/#/auth/?openid=${openid}`);
+                    res.redirect(`${homePage}/#/auth/?openid=${openid}`);
                 } else {
                     QQConnect.getUserInfoByOpenid().then((user_info) => {
                         if (user_info) {
@@ -74,7 +74,7 @@ module.exports = function (app) {
                                 verify_state: parseInt(user.verify_state, 10),
                                 openid: user.openid
                             };
-                            res.redirect(`https://aegis.ivweb.io/#/auth/?openid=${user.openid}&result=${encodeURIComponent(JSON.stringify(req.session.user))}`);
+                            res.redirect(`${homePage}/#/auth/?openid=${user.openid}&result=${encodeURIComponent(JSON.stringify(req.session.user))}`);
                         } else {
                             throw new Error();
                         }
@@ -193,20 +193,18 @@ module.exports = function (app) {
             pluginHandler.login.logout(req, res);
         } else {
             req.session.user = null;
-            var homeUrl = req.protocol + "://" + req.get('host') + '/index.html';
             delete req.session.user;
-            res.redirect(homeUrl);
+            res.redirect(homePage);
         }
     });
-
-    app.post('/upload-sourcemap', upload.array('sourcemap'), function (req, res, next) {
-        var names = [];
-        for (var i = 0; i < req.files.length; i++) {
-            names.push(req.files[i]['originalname']);
-        }
-        res.send({ ret: 1, filename: names.join(', ') });
-    });
-
+    //
+    // app.post('/upload-sourcemap', upload.array('sourcemap'), function (req, res, next) {
+    //     var names = [];
+    //     for (var i = 0; i < req.files.length; i++) {
+    //         names.push(req.files[i]['originalname']);
+    //     }
+    //     res.send({ ret: 1, filename: names.join(', ') });
+    // });
 
     // 请求路径为： controller/xxxAction/xxx.do (get || post)
     app.use("/", function (req, res, next) {
