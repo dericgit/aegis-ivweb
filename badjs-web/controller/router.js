@@ -19,7 +19,7 @@ const StaticServe = require('./static-serve');
 const upload = require('./sourcemap');
 
 
-const pjConfig = require('../../project.json');
+const pjConfig = require('../project.json');
 
 const _ = require("underscore");
 const QQConnect = require('../lib/QQConnect');
