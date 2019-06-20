@@ -4,26 +4,29 @@
  * @date : 2014-12-16
  */
 
-var LogAction = require('./action/LogAction'),
-    ApplyAction = require('./action/ApplyAction'),
-    SourceMapAction = require('./action/SourceMapAction'),
-    UserAction = require("./action/UserAction"),
-    IndexAction = require("./action/IndexAction"),
-    StatisticsAction = require("./action/StatisticsAction"),
-    ApproveAction = require("./action/ApproveAction"),
-    realtimeService = require("../service/RealtimeService"),
-    UserApplyAction = require("./action/UserApplyAction"),
-    pluginHandler = require('../workflow/PluginWorker'),
-    ApiRouter = require('./api'),
-    StaticServe = require('./static-serve'),
-    upload = require('./sourcemap');
+const LogAction = require('./action/LogAction');
+const ApplyAction = require('./action/ApplyAction');
+const SourceMapAction = require('./action/SourceMapAction');
+const UserAction = require("./action/UserAction");
+const IndexAction = require("./action/IndexAction");
+const StatisticsAction = require("./action/StatisticsAction");
+const ApproveAction = require("./action/ApproveAction");
+const realtimeService = require("../service/RealtimeService");
+const UserApplyAction = require("./action/UserApplyAction");
+const pluginHandler = require('../workflow/PluginWorker');
+const ApiRouter = require('./api');
+const StaticServe = require('./static-serve');
+const upload = require('./sourcemap');
 
-var _ = require("underscore");
+
+const pjConfig = require('../../project.json');
+
+const _ = require("underscore");
 const QQConnect = require('../lib/QQConnect');
 
-var log4js = require('log4js'),
-    logger = log4js.getLogger();
-const homePage = global.pjConfig.homepage;
+const log4js = require('log4js');
+const logger = log4js.getLogger();
+const homePage = pjConfig.homepage;
 
 module.exports = function (app) {
     realtimeService(app);
