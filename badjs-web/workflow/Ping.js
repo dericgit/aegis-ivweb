@@ -13,7 +13,7 @@ const formatDate = function (str) {
 const constructEmail = function (items) {
     const html = ['<html><body>'];
     items.forEach(item => {
-        html.push(`<h3>${items}</h3>`);
+        html.push(`<h3>${items}</h3><br>`);
     });
 
     html.push('</body></html>');
