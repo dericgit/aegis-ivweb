@@ -83,13 +83,13 @@ var applyAction = {
                         });
                     });
                 } else {
-                    apply.userName = params.user.loginName;
+                    apply.userName = req.session.user.loginName;
                     apply.status = 0;
                     apply.createTime = new Date();
                     apply.codePath = params.codePath;
                     apply.appkey = crypto
                         .createHash('md5')
-                        .update(new Date() - 0 + 'badjsappkey' + params.user.loginName)
+                        .update(new Date() - 0 + 'badjsappkey' + req.session.user.loginName)
                         .digest('hex');
 
                     if (apply.limitpv == '') {
@@ -116,7 +116,7 @@ var applyAction = {
 
     queryListByUser: function(params, req, res) {
         var applyService = new ApplyService();
-        if (params.user.role != 1) {
+        if (req.session.user.role != 1) {
             applyService.queryListByUser(params, function(err, items) {
                 if (isError(res, err)) {
                     return;
@@ -125,7 +125,7 @@ var applyAction = {
                     ret: 0,
                     msg: 'success',
                     data: {
-                        role: params.user.role,
+                        role: req.session.user.role,
                         item: processData(items)
                     }
                 });
@@ -139,7 +139,7 @@ var applyAction = {
                     ret: 0,
                     msg: 'success',
                     data: {
-                        role: params.user.role,
+                        role: req.session.user.role,
                         item: processData(items)
                     }
                 });
@@ -149,7 +149,7 @@ var applyAction = {
     queryListByAdmin: function(params, req, res) {
         var applyService = new ApplyService();
         //不是管理员的话直接返回错误提示
-        if (params.user.role != 1) {
+        if (req.session.user.role != 1) {
             res.json({
                 ret: 1003,
                 msg: '权限不足'
@@ -171,8 +171,8 @@ var applyAction = {
         var applyService = new ApplyService();
 
         var searchParam = {};
-        if (params.user.role != 1) {
-            searchParam.userName = params.user.loginName;
+        if (req.session.user.role != 1) {
+            searchParam.userName = req.session.user.loginName;
         }
 
         //搜索全部
@@ -188,7 +188,7 @@ var applyAction = {
                 ret: 0,
                 msg: 'success',
                 data: {
-                    role: params.user.role,
+                    role: req.session.user.role,
                     item: processData(items)
                 }
             });
