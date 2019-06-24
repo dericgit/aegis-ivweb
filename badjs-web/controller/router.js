@@ -169,12 +169,12 @@ module.exports = function (app) {
 
         params = _.extend({}, params);
 
-        if (!params.user) {
+        if (!req.session.user) {
             res.json({ ret: -2, msg: "should login" });
             return;
         }
 
-        if (params.user.verify_state !== 2) {
+        if (req.session.user.verify_state !== 2) {
             res.json({ ret: -2, msg: "waiting for admin verify" });
             return;
         }
