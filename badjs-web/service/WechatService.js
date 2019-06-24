@@ -27,7 +27,7 @@ var mdb = orm.connect(mysqlUrl, function (err, db) {
                 mentioned_list.push(d.userName);
             }
             const score = getScore.handleScore(d.pv, d.badjscount);
-            return `> ${d.badjsid}-${d.name} - (得分：<font color="info">${score}</font>)`;
+            return `> ${d.badjsid}-${d.name} - (pv: ${d.pv}; count: ${d.badjscount}; 得分：<font color="info">${score}</font>)`;
         }).join('\n') +
         `\n \n #### 查看 [Aegis](https://aegis.ivweb.io/#/project-daily-statics) 定位问题。`;
 
