@@ -22,7 +22,7 @@ var approveAction = {
     doApprove: function (params, req, res) {
         var approve = params;
         approve.createTime = new Date();
-        approve.userName = params.user.loginName;
+        approve.userName = req.session.user.loginName;
         logger.debug('add_approve param :' + approve);
         var approveService = new ApproveService();
         var logService = new LogService();

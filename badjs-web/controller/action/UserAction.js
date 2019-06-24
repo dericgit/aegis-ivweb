@@ -273,8 +273,8 @@ var userAction = {
             return;
         }
 
-        if (params.user.role != 1) {
-            params.userId = params.user.id;
+        if (req.session.user.role != 1) {
+            params.userId = req.session.user.id;
         }
 
         userService.queryListByCondition(params, function (err, items) {
