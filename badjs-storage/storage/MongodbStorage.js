@@ -24,7 +24,7 @@ const tryInit = function (db, collectionName, cb) {
     }
 
     hadCreatedCollection[collectionName] = 'ping';
-    db.createCollection(collectionName, { capped: true, size: 500000000, max: 1000000 }, function (err, collection) {
+    db.createCollection(collectionName, { capped: true, size: 1073741824, max: 1000000 }, function (err, collection) {
         if (err) {
             console.error('创建 collection 失败:', err);
             return;
