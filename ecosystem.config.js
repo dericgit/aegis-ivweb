@@ -1,8 +1,11 @@
+const base = '/data/log/pm2';
+
 module.exports = {
     apps: [{
         name: 'web',
         script: 'badjs-web/app.js',
-        args: '',
+        output: `${base}/web.log`,
+        error: `${base}/web_error.log`,
         instances: 1,
         autorestart: true,
         watch: false,
@@ -16,7 +19,8 @@ module.exports = {
     }, {
         name: 'storage',
         script: 'badjs-storage/app.js',
-        args: '',
+        output: `${base}/storage.log`,
+        error: `${base}/storage_error.log`,
         instances: 1,
         autorestart: true,
         watch: false,
@@ -30,7 +34,8 @@ module.exports = {
     }, {
         name: 'mq',
         script: 'badjs-mq/app.js',
-        args: '',
+        output: `${base}/mq.log`,
+        error: `${base}/mq_error.log`,
         instances: 1,
         autorestart: true,
         watch: false,
@@ -44,7 +49,8 @@ module.exports = {
     }, {
         name: 'acceptor',
         script: 'badjs-acceptor/app.js',
-        args: '',
+        output: `${base}/acceptor.log`,
+        error: `${base}/acceptor_error.log`,
         instances: 1,
         autorestart: true,
         watch: false,
