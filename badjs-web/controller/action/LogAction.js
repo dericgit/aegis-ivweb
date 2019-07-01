@@ -10,6 +10,8 @@ const pjConfig = require('../../project.json');
 const fs = require("fs");
 const path = require("path");
 const crypto = require('crypto');
+const IP2Region = require('ip2region');
+const ipQuery = new IP2Region();
 
 var isError = function (res, error) {
     if (error) {
@@ -33,7 +35,9 @@ var LogAction = {
             if (isError(res, err)) {
                 return;
             }
-
+            items.forEach(item => {
+                item.region = ipQuery.search(item.ip);
+            });
             res.json({ ret: 0, msg: "success-query", data: items });
         });
     },
