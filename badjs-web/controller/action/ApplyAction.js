@@ -83,6 +83,7 @@ var applyAction = {
                         });
                     });
                 } else {
+                    apply.user = req.session.user;
                     apply.userName = req.session.user.loginName;
                     apply.status = 0;
                     apply.createTime = new Date();
