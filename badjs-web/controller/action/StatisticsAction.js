@@ -70,17 +70,16 @@ var StatisticsAction = {
     },
     queryByChart: function (param, req, res) {
         var statisticsService = new StatisticsService();
-        if (!param.projectId || isNaN(param.projectId) || !param.timeScope) {
+        if (!param.projectIds || !param.timeScope) {
             res.json({
                 ret: 0,
-                msg: 'success',
-                data: {}
+                msg: 'invalid query'
             });
             return;
         }
         statisticsService.queryByChart({
             userName: req.session.user.loginName,
-            projectId: param.projectId - 0,
+            projectId: param.projectIds.split(','),
             timeScope: param.timeScope - 0
         }, function (err, data) {
             if (err) {

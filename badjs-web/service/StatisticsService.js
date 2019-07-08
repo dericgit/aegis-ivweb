@@ -83,9 +83,7 @@ StatisticsService.prototype = {
     queryByChart: function (param, callback) {
         //筛选参数
         var s_params = {};
-        if (param.projectId != -1) {
-            s_params.projectId = param.projectId;
-        }
+        s_params.projectId = param.projectId;
 
         //时间开始范围 7天内 或者1个月内
         var oneDay = 1000 * 60 * 60 * 24;
