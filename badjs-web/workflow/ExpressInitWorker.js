@@ -1,33 +1,53 @@
-var express = require('express');
-var tpl = require('express-micro-tpl');
-var crypto = require('crypto');
-var session = require('express-session');
-var bodyParser = require('body-parser');
-var cookieParser = require('cookie-parser');
-var serveStatic = require('serve-static');
-var app = express();
-var router = require('../controller/router');
-var compress = require('compression');
-var orm = require('orm');
-var pluginHandler = require('./PluginWorker');
-var path = require('path');
+const express = require('express');
+const tpl = require('express-micro-tpl');
+const crypto = require('crypto');
+const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const serveStatic = require('serve-static');
+const app = express();
+const router = require('../controller/router');
+const compress = require('compression');
+const orm = require('orm');
+const pluginHandler = require('./PluginWorker');
+const path = require('path');
 
-var log4js = require('log4js'),
-    logger = log4js.getLogger();
+const log4js = require('log4js');
+const logger = log4js.getLogger();
+const mysql = global.pjconfig.mysql;
+const msqlUrl = mysql.url;
+
+const sessionStore = new MySQLStore({
+    host: mysql.host,
+    port: mysql.port,
+    user: mysql.user,
+    password: mysql.password,
+    database: mysql.database
+});
 
 app.set('views', path.join(__dirname, '..', 'views'));
 app.set('view engine', 'html');
 app.engine('html', tpl.__express);
 app.use(compress());
-app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 48 * 60 * 60 * 1000 } }));
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(session({
+    key: 'aegis_session_cookie',
+    secret: 'keyboard cat',
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
+    checkExpirationInterval: 900000,
+    expiration: 30 * 24 * 60 * 60 * 1000,
+    createDatabaseTable: true
+}));
+
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json({}));
 app.use(cookieParser());
 
 app.use('/static', serveStatic(path.join(__dirname, '..', 'static')));
 app.use('/sm', serveStatic(global.pjconfig.sourcemap));
 
-var msqlUrl = global.pjconfig.mysql.url;
 
 logger.info('connect mysql: ' + msqlUrl);
 
@@ -80,9 +100,9 @@ router(app);
 pluginHandler.registerRoute(app);
 
 logger.info('Listen At Port: ' + global.pjconfig.port);
-var port = parseInt(global.pjconfig.port, 10) || 80;
+
+const port = parseInt(global.pjconfig.port, 10) || 80;
 module.exports = function () {
     app.listen(port);
-
     logger.info('start badjs-web , listen ' + port + ' ...');
 };

@@ -27,7 +27,7 @@ module.exports = function () {
         const logService = new LogService();
         const userService = new UserService();
 
-        const { wechat_ping, ping } = global.pjconfig;
+        const { wechat_ping, ping = [] } = global.pjconfig;
         const url = `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${wechat_ping}`;
 
         const job = function () {
