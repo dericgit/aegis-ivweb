@@ -46,7 +46,8 @@ var StatisticsAction = {
     getRate: function (param, req, res) {
         var db = global.models.db,
             date = param.date.replace(/\D/g, '');
-        db.driver.execQuery('select * from b_quality where date=' + date + ' and badjsid=' + param.badjsid + ';',
+        const ids = param.badjsid;
+        db.driver.execQuery('select * from b_quality where date=' + date + ' and badjsid= (' + ids + ');',
             (err, data) => {
                 res.json(data);
             });
