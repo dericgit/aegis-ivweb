@@ -1,7 +1,7 @@
 const request = require('request');
 const mail = require('../utils/ivwebMail_for_single.js');
 
-let INTERVAL = 2;
+let INTERVAL = 10;
 let mailed = false;
 
 module.exports = function () {
@@ -27,8 +27,8 @@ module.exports = function () {
                         const msg = `Aegis数据上报异常 - 检测到 aegis id: ${id} owner: ${loginName} 最近${INTERVAL}分钟没有数据上报，服务或者项目可能存在异常，请及时检查`;
                         if (!mailed) {
                             mailed = true;
-                            let { ownerMailTo } = global.pjconfig;
-                            mail('', `${ownerMailTo},${email}`, '', 'Aegis数据上报异常', msg, '', true);
+                            let { errorMailTo } = global.pjconfig;
+                            mail('', `${errorMailTo}`, '', 'Aegis数据上报异常', msg, '', true);
                         }
                         request({
                             url,
@@ -48,8 +48,7 @@ module.exports = function () {
     };
     // ping 逻辑
     let TIMER = setInterval(job, INTERVAL * 60 * 1000);
-    // 限制邮件频率为10分钟一次
-    // 晚上低峰期流量会比平时少
+    // 限制邮件频率为一个小时一次
     setInterval(() => {
         const hour = new Date().getHours();
         if (hour > 1 && hour < 9) {
@@ -59,14 +58,14 @@ module.exports = function () {
                 TIMER = setInterval(job, INTERVAL * 60 * 1000);
             }
         } else {
-            if (INTERVAL !== 2) {
-                INTERVAL = 2;
+            if (INTERVAL !== 30) {
+                INTERVAL = 30;
                 clearInterval(TIMER);
                 TIMER = setInterval(job, INTERVAL * 60 * 1000);
             }
         }
         mailed = false;
-    }, 10 * 60 * 1000);
+    }, 60 * 60 * 1000);
 
 };
 
