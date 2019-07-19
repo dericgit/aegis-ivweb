@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         avg_time: {
-            type: DataTypes.STRING(20),
+            type: DataTypes.FLOAT,
             allowNull: false
         },
         create_time: {
