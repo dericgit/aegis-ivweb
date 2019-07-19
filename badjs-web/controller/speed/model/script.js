@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = (sequelize, DataTypes) => {
-    const Script = sequelize.define('Scirpt', {
+    const Script = sequelize.define('Script', {
         id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         avg_time: {
-            type: DataTypes.STRING(20),
+            type: DataTypes.FLOAT,
             allowNull: false
         },
         create_time: {
