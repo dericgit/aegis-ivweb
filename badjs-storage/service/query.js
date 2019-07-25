@@ -175,9 +175,10 @@ module.exports = function () {
 
             var json = req.query;
             var id = json.id,
-                uin = json.uin,
                 startDate = json.startDate.getTime(),
                 endDate = json.endDate.getTime();
+
+            var uinReg = /^[1-9][0-9]{4,13}$/gim;
 
             var queryJSON = {
                 all: {}
@@ -185,6 +186,10 @@ module.exports = function () {
 
             var includeJSON = [];
             json.include.forEach(function (value, key) {
+                if (uinReg.test(value)) {
+                    queryJSON.uin = value
+                    return;
+                }
                 includeJSON.push(new RegExp(value));
             });
 
