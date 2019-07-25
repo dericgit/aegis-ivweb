@@ -178,7 +178,7 @@ module.exports = function () {
                 startDate = json.startDate.getTime(),
                 endDate = json.endDate.getTime();
 
-            var uinReg = /^[1-9][0-9]{4,9}$/gim;
+            var uinReg = /^[1-9][0-9]{4,13}$/gim;
 
             var queryJSON = {
                 all: {}
