@@ -19,7 +19,7 @@ module.exports = function () {
 
         pushProject();
 
-        require('../service/OfflineLogService')();
+        // require('../service/OfflineLogService')();
         // require('../service/PingService')();
         mkdirs(path.join(__dirname, '../static/img/tmp'), (str) => {
             console.log(str || 'mkdir success');

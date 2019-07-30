@@ -5,12 +5,19 @@
     "mysql" : {
         "url" : "mysql://root:root@localhost:3306/badjs"
     },
+    "db": {
+        "whitelist": {
+            "turtle": "mysql://root:510675621@localhost:3306/test",
+            "aegis": "mysql://root:510675621@localhost:3306/test"
+        }
+    },
     "storage" : {
         "errorMsgTopUrl" : "http://127.0.0.1:9000/errorMsgTop",
         "queryUrl" : "http://127.0.0.1:9000/query"
     },
     "acceptor": {
-        "pushProjectUrl" : "http://127.0.0.1:9001/getProjects"
+        "pushProjectUrl" : "http://127.0.0.1:9001/getProjects",
+        "pushWhitelistUrl": "http://127.0.0.1:9001/syncWhitelist"
     },
     "openapi": {
         "pushProjectUrl" : "http://127.0.0.1:9002/getProjects"

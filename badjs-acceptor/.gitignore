@@ -229,6 +229,7 @@ node_modules/
 
 #############
 ## my
-############# 
-project.db  
+#############
+project.db
+whitelist.db
 *.bat

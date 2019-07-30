@@ -31,7 +31,7 @@ if (cluster.isMaster) {
     }
 
     setTimeout(function() {
-        require('./service/ProjectService')(clusters);
+        require('./service/syncService')(clusters);
     }, 3000);
 } else {
     require('./worker');
