@@ -2,7 +2,8 @@
 
 const express = require('express');
 const router = express.Router();
-const models  = require('./model');
+const models = require('./model');
+const moment = require('moment');
 const Sequelize = models.Sequelize;
 const Op = Sequelize.Op;
 
@@ -10,7 +11,7 @@ router.get('/:id/:type', (req, res) => {
     const id = req.params.id;
     const type = req.params.type;
     let model;
-    switch(type) {
+    switch (type) {
         case 'img': {
             model = models.Img;
             break;
@@ -57,11 +58,11 @@ router.get('/:id/:type', (req, res) => {
 
 });
 
-router.get('/:id/:type/url',  (req, res) => {
+router.get('/:id/:type/url', (req, res) => {
     const id = req.params.id;
     const type = req.params.type;
     let model;
-    switch(type) {
+    switch (type) {
         case 'img': {
             model = models.Img;
             break;
@@ -101,5 +102,34 @@ router.get('/:id/:type/url',  (req, res) => {
         });
     })
 });
+
+
+router.get('/:id/:type/city-speed', (req, res) => {
+    const { id, type } = req.params;
+    const { date } = req.query;
+    if (!id || !type || !date) {
+        res.json(403, {
+            ret: 2000,
+            error: 'INVALID_VERIFY_STATE',
+            message: '传参无效'
+        })
+    }
+    const thisDay = moment(date);
+    const lastDay = moment(thisDay).add(-1, 'days');
+    models.CitySpeed.findOne({
+        where: {
+            type,
+            project_id: id,
+            [Op.between]: [lastDay, thisDay]
+        }
+    }).then(data => {
+        res.json({
+            ret: 0,
+            data
+        });
+    })
+});
+
+
 
 module.exports = router;
