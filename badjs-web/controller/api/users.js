@@ -71,6 +71,18 @@ router.post('/login-by-code', function (req, res) {
     });
 });
 
+router.post('/logout', function (req, res) {
+    req.session.destroy(function(err) {
+        if(err){
+            res.json({ret_code: 2, ret_msg: '退出登录失败'});
+            return;
+        }
+        // req.session.loginUser = null;
+        res.clearCookie();
+        res.redirect('/');
+    });
+});
+
 
 router.get('/update_session', function (req, res) {
     const userDao = req.models.userDao;
@@ -202,7 +214,7 @@ router.post('/bind-openid', function (req, res) {
 /**
  * 获取个人资料
  */
-function meAction (req, res) {
+function meAction(req, res) {
     if (!req.session.user) {
         res.json({
             code: -1,
