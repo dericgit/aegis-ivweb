@@ -120,7 +120,7 @@ router.get('/:id/:type/city-speed', (req, res) => {
         where: {
             type,
             project_id: id,
-            [Op.between]: [lastDay, thisDay]
+            [Op.between]: [lastDay.toDate(), thisDay.toDate()]
         }
     }).then(data => {
         res.json({
