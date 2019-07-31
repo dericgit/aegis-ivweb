@@ -237,3 +237,4 @@ offline_log
 uploads
 *.example
 *config.json
+package-lock.json
