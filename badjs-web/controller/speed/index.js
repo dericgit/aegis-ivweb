@@ -127,7 +127,10 @@ router.get('/:id/:type/city-speed', (req, res) => {
     }).then(data => {
         res.json({
             ret: 0,
-            data
+            city_speed: JSON.parse(data.city_speed),
+            city_status: JSON.parse(city_status),
+            create_time: data.create_time,
+            project_id: project_id
         });
     })
 });
