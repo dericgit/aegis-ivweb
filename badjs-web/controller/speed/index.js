@@ -114,8 +114,8 @@ router.get('/:id/:type/city-speed', (req, res) => {
             message: '传参无效'
         })
     }
-    const thisDay = moment(date);
-    const lastDay = moment(thisDay).add(-1, 'days');
+    const lastDay = moment(date).add(1, 'days');
+    const thisDay = moment(date).add(2, 'days');
     models.CitySpeed.findOne({
         where: {
             type,
