@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = (sequelize, DataTypes) => {
-    const Img = sequelize.define('Img', {
+    const Static = sequelize.define('Static', {
         id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
@@ -27,5 +27,5 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: false
         }
     );
-    return Img;
+    return Static;
 }

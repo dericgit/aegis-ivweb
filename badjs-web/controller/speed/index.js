@@ -12,12 +12,8 @@ router.get('/:id/:type', (req, res) => {
     const type = req.params.type;
     let model;
     switch (type) {
-        case 'img': {
-            model = models.Img;
-            break;
-        }
-        case 'script': {
-            model = models.Script;
+        case 'static': {
+            model = models.Static;
             break;
         }
         case 'fetch': {
@@ -63,12 +59,8 @@ router.get('/:id/:type/url', (req, res) => {
     const type = req.params.type;
     let model;
     switch (type) {
-        case 'img': {
-            model = models.Img;
-            break;
-        }
-        case 'script': {
-            model = models.Script;
+        case 'static': {
+            model = models.Static;
             break;
         }
         case 'fetch': {

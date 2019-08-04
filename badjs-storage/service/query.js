@@ -179,6 +179,7 @@ module.exports = function () {
                 endDate = json.endDate.getTime();
 
             var uinReg = /^[1-9][0-9]{4,13}$/gim;
+            var guidReg = /^[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$/;
 
             var queryJSON = {
                 all: {}
@@ -186,7 +187,7 @@ module.exports = function () {
 
             var includeJSON = [];
             json.include.forEach(function (value, key) {
-                if (uinReg.test(value)) {
+                if (uinReg.test(value) || guidReg.test(value)) {
                     queryJSON.uin = value
                     return;
                 }
