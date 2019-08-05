@@ -37,14 +37,17 @@ router.get('/:id/:type', (req, res) => {
         });
         return;
     }
+    const whereOptions = {
+        aegis_id: id,
+        create_time: {
+            [Op.between]: [new Date(parseInt(startDate)), new Date(parseInt(endDate))],
+        }
+    };
+    if (url) {
+        whereOptions.url =  decodeURIComponent(url);
+    }
     model.findAll({
-        where: {
-            aegis_id: id,
-            url: decodeURIComponent(url),
-            create_time: {
-                [Op.between]: [new Date(parseInt(startDate)), new Date(parseInt(endDate))],
-            }
-        },
+        where: whereOptions
     }).then(data => {
         res.json({
             ret: 0,
