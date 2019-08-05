@@ -11,10 +11,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        url: {
-            type: DataTypes.STRING(3000),
-            allowNull: false
-        },
         avg_time: {
             type: DataTypes.FLOAT,
             allowNull: false
