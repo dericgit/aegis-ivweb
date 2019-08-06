@@ -157,28 +157,14 @@ EmailService.prototype = {
                             if (err) return logger.error('Send email statisticsService queryById error ' + applyId);
 
                             if (data && data.length > 0 && data[0].content && data[0].content.length > 0) {
-
-                                that.statisticsService.queryByChart({
-                                    projectId: applyId,
-                                    timeScope: 2
-                                }, function (err, chartData) {
-                                    if (err || chartData.data.length <= 0) {
-                                        that.sendEmail({
-                                            to: to_list,
-                                            cc: cc_list,
-                                            title: name
-                                        }, data[0], applyId);
-                                    } else {
-                                        count++;
-                                        setTimeout(function () {
-                                            that.sendEmail({
-                                                to: to_list,
-                                                cc: cc_list,
-                                                title: name
-                                            }, data[0], applyId);
-                                        }, 1000 * count);
-                                    }
-                                });
+                                count++;
+                                setTimeout(function () {
+                                    that.sendEmail({
+                                        to: to_list,
+                                        cc: cc_list,
+                                        title: name
+                                    }, data[0], applyId);
+                                }, 1000 * count);
                             } else {
                                 logger.log('Send email data format error, no badjs msg, by ' + applyId);
                             }
