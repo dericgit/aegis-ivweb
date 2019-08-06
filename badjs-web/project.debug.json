@@ -35,8 +35,7 @@
         "emailSuffix" : "@demo.com",
         "smtp": "smtp.demo.com",
         "time": "09:00:00",
-        "top": 20,
-        "module": "email"
+        "top": 20
     },
     "ping": [17, 182],
     "errorMailTo": "xx@yy.com",

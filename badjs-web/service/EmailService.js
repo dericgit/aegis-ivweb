@@ -12,7 +12,7 @@ var UserService = require('./UserService');
 var dateFormat = require("../utils/dateFormat");
 var StatisticsService = require('./StatisticsService');
 var scoreLib = require('../lib/getScore.js');
-var sendEmail = require("../utils/" + global.pjconfig.email.module);
+var sendEmail = require('../utils/ivwebMail');
 var sendApplyEmail = require('../utils/ivwebMail_for_single');
 
 var DAY_LENGTH = 30;
