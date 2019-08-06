@@ -104,7 +104,7 @@ function timeoutSendMail () {
                 from: mailOptions.from,
                 to: [j],
                 cc: [],
-                subject: '【IVWEB BadJs】top error日报',
+                subject: '【IVWEB Aegis】top error日报',
                 html: [],
                 attachments: []
             };
