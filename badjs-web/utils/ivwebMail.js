@@ -11,6 +11,7 @@ const emailConf = global.pjconfig.email;
 // create reusable transporter object using the default SMTP transport
 const transporter = nodemailer.createTransport({
     service: 'qq',
+    port: 465,
     auth: {
         user: emailConf.ivwebMailuser,
         pass: emailConf.ivwebMailpass
@@ -19,7 +20,7 @@ const transporter = nodemailer.createTransport({
 
 // setup e-mail data with unicode symbols
 let mailOptions = {
-    from: '"IVWEB" 2580575484@qq.com', // sender address
+    from: '"IVWEB-Aegis"', // sender address
 };
 
 let mailList = [];
@@ -145,12 +146,19 @@ function timeoutSendMail () {
 
 function sendMail (maildata) {
     console.log('send email ....');
-    console.log(maildata.to, maildata.subject, maildata.html);
+    console.log(maildata.to, maildata.subject);
     return new Promise((resolve, reject) => {
         // send mail with defined transport object
         transporter.sendMail(maildata, function (error, info) {
             if (error) {
-                console.log(error);
+                console.error(error);
+                transporter.sendMail(maildata, function(e, m){
+                    if (e) {
+                        console.error('resend email error aegin');
+                    } else {
+                        logger.info('Message sent: ' + m.response);
+                    }
+                });
                 reject(error);
             } else {
                 resolve(info);
