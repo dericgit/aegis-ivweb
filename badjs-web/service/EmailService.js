@@ -33,6 +33,63 @@ var getYesterday = function () {
     return date;
 };
 
+var setChartX = function (number) {
+    var days = [];
+    var nowDay = new Date() - 0;
+
+    for (var i = number; i > 0; i--) {
+        var day = nowDay - i * 1000 * 60 * 60 * 24;
+        days.push(dateFormat(new Date(day), 'MM-dd'));
+    }
+    return days;
+};
+
+var getImageData = function (name, data) {
+
+    var totalArray = [];
+    var categories = setChartX(DAY_LENGTH);
+
+    for (var i = 0; i < DAY_LENGTH; i++) {
+        totalArray.push(0);
+    }
+
+    function whichDayIndex (day1) {
+        for (var i = 0, len = categories.length; i < len; i++) {
+            if (day1 == categories[i]) {
+                return i;
+            }
+        }
+        return false;
+    }
+
+    _.forEach(data, function (value, key) {
+        var index = whichDayIndex(dateFormat(new Date(value.startDate), 'MM-dd'));
+        totalArray[index] = value.total;
+    });
+
+    return {
+        data: {
+            width: 800,
+            title: {
+                text: "The last " + DAY_LENGTH + " days line charts"
+            },
+            xAxis: {
+                categories: categories
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Total'
+                }
+            },
+            series: [{
+                data: totalArray,
+                name: 'badjs count'
+            }]
+        }
+    };
+};
+
 var encodeHtml = function (str) {
     return (str + '').replace(/&/g, '&amp;')
         .replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -41,7 +98,7 @@ var encodeHtml = function (str) {
 };
 
 EmailService.prototype = {
-    render: function (data) {
+    render: function (data, imagePath) {
         var that = this;
         data = data || {};
         var html = [];
@@ -52,6 +109,12 @@ EmailService.prototype = {
             .replace(/{{homepage}}/g, that.homepage));
         var content = data.content;
         if (content && content.length) {
+
+            if (imagePath) {
+                html.push('<h4>最近' + DAY_LENGTH + '天图表统计</h4>');
+                html.push('<p><img src="cid:' + data.cid1 + '"></p>');
+            }
+
             var total_top = 0;
             var index = 0;
             content.forEach(function (v) {
@@ -63,7 +126,6 @@ EmailService.prototype = {
 
             var total = data.total;
             var viewPv = 0, score = 0;
-
             if (total_top > total) total_top = total;
             if (data.pvData && data.pvData.length > 0) {
                 viewPv = data.pvData[0].pv;
@@ -155,14 +217,43 @@ EmailService.prototype = {
                             if (err) return logger.error('Send email statisticsService queryById error ' + applyId);
 
                             if (data && data.length > 0 && data[0].content && data[0].content.length > 0) {
-                                count++;
-                                setTimeout(function () {
-                                    that.sendEmail({
-                                        to: to_list,
-                                        cc: cc_list,
-                                        title: name
-                                    }, data[0], applyId);
-                                }, 1000 * count);
+                                that.statisticsService.queryByChart({
+                                    projectId: applyId,
+                                    timeScope: 2
+                                }, function (err, chartData) {
+                                    if (err || chartData.data.length <= 0) {
+                                        that.sendEmail({
+                                            to: to_list,
+                                            cc: cc_list,
+                                            title: name
+                                        }, data[0], applyId);
+                                    } else {
+                                        count++;
+                                        setTimeout(function () {
+                                            var exporting = require('node-highcharts-exporting-v2');
+                                            exporting(getImageData(name, chartData.data), function (err, image) {
+                                                if (err) {
+                                                    logger.info("generate image error " + err.toString() + ", id =" + applyId);
+                                                    that.sendEmail({
+                                                        to: to_list,
+                                                        cc: cc_list,
+                                                        title: name
+                                                    }, data[0], applyId);
+                                                } else {
+                                                    var imagePath = "static/img/tmp/" + (new Date - 0 + applyId) + ".png";
+                                                    fs.writeFile(path.join(__dirname, "..", imagePath), new Buffer(image, 'base64'), function () {
+                                                        that.sendEmail({
+                                                            to: to_list,
+                                                            cc: cc_list,
+                                                            title: name,
+                                                            imagePath: imagePath
+                                                        }, data[0], applyId);
+                                                    });
+                                                }
+                                            });
+                                        }, 1000 * count);
+                                    }
+                                });
                             } else {
                                 logger.log('Send email data format error, no badjs msg, by ' + applyId);
                             }
@@ -182,8 +273,15 @@ EmailService.prototype = {
         };
         this.statisticsService.getPvById(pvParam, function (err, pvdata) {
             data.pvData = pvdata;
-            var content = that.render(data);
-            sendEmail(that.from, emails.to, emails.cc, title, content);
+            data.cid1 = '000' + parseInt(Math.random() * 1000);
+            var content = that.render(data, emails.imagePath);
+
+            var attachments = [{
+                filename: data.cid1 + '01.png',
+                path: that.host + emails.imagePath,
+                cid: data.cid1
+            }];
+            sendEmail(that.from, emails.to, emails.cc, title, content, attachments);
         });
     },
     sendApplySuccessEmail: function (user, loginUser, items) {
