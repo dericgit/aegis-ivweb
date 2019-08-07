@@ -104,7 +104,7 @@ function timeoutSendMail () {
                 from: mailOptions.from,
                 to: [j],
                 cc: [],
-                subject: '【IVWEB BadJs】top error日报',
+                subject: '【IVWEB Aegis】top error日报',
                 html: [],
                 attachments: []
             };
@@ -145,7 +145,7 @@ function timeoutSendMail () {
 
 function sendMail (maildata) {
     console.log('send email ....');
-    console.log(maildata.to, maildata.subject);
+    console.log(maildata.to, maildata.subject, maildata.html);
     return new Promise((resolve, reject) => {
         // send mail with defined transport object
         transporter.sendMail(maildata, function (error, info) {
