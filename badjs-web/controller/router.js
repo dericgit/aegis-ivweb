@@ -18,6 +18,7 @@ const ApiRouter = require('./api');
 const StaticServe = require('./static-serve');
 const upload = require('./sourcemap');
 const WhitelistAction = require('./action/WhitelistAction');
+const SpeedRouter = require('./speed/index');
 
 const pjConfig = require('../project.json');
 
@@ -147,6 +148,8 @@ module.exports = function(app) {
 
     // global.pjconfig.QQConnect
     app.use('/api', ApiRouter);
+
+    app.use('/speed-server', SpeedRouter);
 
     app.use('/aegis', StaticServe);
 

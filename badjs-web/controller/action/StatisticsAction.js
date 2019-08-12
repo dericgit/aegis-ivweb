@@ -46,9 +46,13 @@ var StatisticsAction = {
     getRate: function (param, req, res) {
         var db = global.models.db,
             date = param.date.replace(/\D/g, '');
-        db.driver.execQuery('select * from b_quality where date=' + date + ' and badjsid=' + param.badjsid + ';',
+        const ids = param.badjsid;
+        db.driver.execQuery('select * from b_quality where date=' + date + ' and badjsid in (' + ids + ');',
             (err, data) => {
-                res.json(data);
+                res.json({
+                    data: data,
+                    retcode: 0
+                });
             });
     },
     projectTotal: function (param, req, res) {
@@ -70,17 +74,16 @@ var StatisticsAction = {
     },
     queryByChart: function (param, req, res) {
         var statisticsService = new StatisticsService();
-        if (!param.projectId || isNaN(param.projectId) || !param.timeScope) {
+        if (!param.projectIds || !param.timeScope) {
             res.json({
                 ret: 0,
-                msg: 'success',
-                data: {}
+                msg: 'invalid query'
             });
             return;
         }
         statisticsService.queryByChart({
             userName: req.session.user.loginName,
-            projectId: param.projectId - 0,
+            projectId: param.projectIds.split(','),
             timeScope: param.timeScope - 0
         }, function (err, data) {
             if (err) {

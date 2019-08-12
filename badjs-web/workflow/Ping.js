@@ -2,7 +2,7 @@ const request = require('request');
 const moment = require('moment');
 const mail = require('../utils/ivwebMail_for_single.js');
 
-let INTERVAL = 2; // 分钟
+let INTERVAL = 10; // 分钟
 let EMAIL_INTERVAL = 60; // 分钟
 let emailMap = {};
 
@@ -27,7 +27,7 @@ module.exports = function () {
         const logService = new LogService();
         const userService = new UserService();
 
-        const { wechat_ping, ping } = global.pjconfig;
+        const { wechat_ping, ping = [] } = global.pjconfig;
         const url = `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${wechat_ping}`;
 
         const job = function () {
@@ -63,36 +63,18 @@ module.exports = function () {
             });
         };
         // ping 逻辑
-        let TIMER = setInterval(job, INTERVAL * 60 * 1000);
-        // 限制邮件频率为10分钟一次
-        // 晚上低峰期流量会比平时少
-        setInterval(() => {
-            const hour = new Date().getHours();
-            if (hour > 1 && hour < 9) {
-                if (INTERVAL !== 10) {
-                    INTERVAL = 10;
-                    clearInterval(TIMER);
-                    TIMER = setInterval(job, INTERVAL * 60 * 1000);
-                }
-            } else {
-                if (INTERVAL !== 2) {
-                    INTERVAL = 2;
-                    clearInterval(TIMER);
-                    TIMER = setInterval(job, INTERVAL * 60 * 1000);
-                }
-            }
-        }, 10 * 60 * 1000);
+        setInterval(job, INTERVAL * 60 * 1000);
 
         setInterval(() => {
             let { errorMailTo } = global.pjconfig;
             let msgs = [];
-            for (let k in emailMap) {
-                let v = emailMap[k];
-                if (!errorMailTo.includes(v.email)) {
-                    errorMailTo += `,${v.email}`;
-                }
-                msgs.push(v.msg);
-            }
+            // for (let k in emailMap) {
+            //     let v = emailMap[k];
+            //     if (!errorMailTo.includes(v.email)) {
+            //         errorMailTo += `,${v.email}`;
+            //     }
+            //     msgs.push(v.msg);
+            // }
             console.log('send aegis ping error mail to: ', errorMailTo);
             if (msgs.length) {
                 const html = constructEmail(msgs);

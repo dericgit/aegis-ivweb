@@ -3,7 +3,12 @@
     "homepage": "https://aegis.ivweb.io",
     "port": 8081,
     "mysql" : {
-        "url" : "mysql://root:root@localhost:3306/badjs"
+        "url" : "mysql://root:root@localhost:3306/badjs",
+        "host": "localhost",
+        "port": 3306,
+        "user": "root",
+        "password": "root",
+        "database": "badjs"
     },
     "db": {
         "whitelist": {
@@ -37,8 +42,7 @@
         "emailSuffix" : "@demo.com",
         "smtp": "smtp.demo.com",
         "time": "09:00:00",
-        "top": 20,
-        "module": "email"
+        "top": 20
     },
     "ping": [17, 182],
     "errorMailTo": "xx@yy.com",
