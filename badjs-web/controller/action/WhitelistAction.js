@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 const logger = require('log4js').getLogger();
-const whitelistService = require('../../service/whitelistService');
+const whitelistService = require('../../service/WhitelistService');
 
 const ROLE = {
     ADMIN: 1

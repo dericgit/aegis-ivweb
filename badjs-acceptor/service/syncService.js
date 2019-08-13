@@ -23,6 +23,10 @@ if (!fs.existsSync(dbPath)) {
     fs.writeFileSync(dbPath, '{}', 'utf8');
 }
 
+if (!fs.existsSync(whitelistPath)) {
+    fs.writeFileSync(whitelistPath, '{}', 'utf8');
+}
+
 const app = express();
 
 app.use(bodyParser.json({ limit: '10mb' }));
@@ -78,7 +82,7 @@ const syncService = function(clusters) {
         })
         .listen(9001);
 
-    var info = fs.readFileSync(dbPath, 'utf-8');
+    const info = fs.readFileSync(dbPath, 'utf-8');
     const whitelist = fs.readFileSync(whitelistPath, 'utf-8');
 
     dispatchCluster({

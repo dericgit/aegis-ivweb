@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const whitelistConfig = global.pjconfig.db.whitelist;
+const whitelistConfig = global.pjconfig.mysql.url;
 
 const sequelizeOptions = {
     pool: {
