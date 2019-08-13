@@ -48,7 +48,7 @@ var StatisticsAction = {
             date = param.date.replace(/\D/g, '');
         const ids = param.badjsid;
         db.driver.execQuery('select * from b_quality where date=' + date + ' and badjsid in (' + ids + ');',
-            (err, data) => {
+            (err, data = []) => {
                 res.json({
                     data: data,
                     retcode: 0
