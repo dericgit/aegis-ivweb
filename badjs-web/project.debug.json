@@ -11,10 +11,7 @@
         "database": "badjs"
     },
     "db": {
-        "whitelist": {
-            "turtle": "mysql://root:510675621@localhost:3306/test",
-            "aegis": "mysql://root:510675621@localhost:3306/test"
-        }
+        "whitelist": "mysql://root:root@localhost:3306/badjs"
     },
     "storage" : {
         "errorMsgTopUrl" : "http://127.0.0.1:9000/errorMsgTop",

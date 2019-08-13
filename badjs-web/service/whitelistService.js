@@ -1,44 +1,32 @@
 'user strict';
 
 const moment = require('moment');
-const _differenceBy = require('lodash/differenceBy');
 const logger = require('log4js').getLogger();
 const request = require('request-promise-native');
-const WhitelistTurtleModel = require('../model/WhitelistTurtle');
-const WhitelistAegisModel = require('../model/WhitelistAegis');
+const WhitelistModel = require('../model/Whitelist');
 
 moment.prototype.toMySqlDateTime = function() {
     return this.format('YYYY-MM-DD HH:mm:ss');
 };
 
-const WHITELIST_SOURCE = {
-    AEGIS: 'AEGIS',
-    TURTLE: 'TURTLE'
-};
-
-const turtleSourceWhere = {
-    where: { source: WHITELIST_SOURCE.TURTLE }
-};
-const aegisSourceWhere = {
-    where: { source: WHITELIST_SOURCE.AEGIS }
-};
-
-function transformTurtleToAegis(turtleRecord) {
-    const { uin, mark: remark, operRtx: operator, ts } = turtleRecord;
-    return {
-        uin,
-        source: WHITELIST_SOURCE.TURTLE,
-        remark,
-        operator,
-        createdAt: ts.toMySqlDateTime()
-    };
-}
-
 module.exports = {
-    WHITELIST_SOURCE,
-    async findUser({ where = {}, limit, offset = 0 }) {
-        return WhitelistAegisModel.findAndCountAll({ where, limit, offset });
+    /**
+     * 分页查找
+     * @param {number} params.offset - 偏移量
+     * @param {number} params.limit - 单次查找数量
+     */
+    async findBatchUsers({ where = {}, limit, offset = 0 }) {
+        return WhitelistModel.findAndCountAll({ where, limit, offset });
     },
+
+    /**
+     * 根据条件查找单条记录
+     * @param {Object} where
+     */
+    async findSingleUser(where) {
+        return WhitelistModel.findOne({ where });
+    },
+
     /**
      * 添加白名单用户
      * @param {Object} param
@@ -46,10 +34,11 @@ module.exports = {
      * @param {string} param.operator - 操作者
      * @returns {Array}
      */
-    async addUser({ uin, operator, remark }) {
-        const [user, isCreated] = await WhitelistAegisModel.findOrCreate({
-            where: { uin, source: WHITELIST_SOURCE.AEGIS },
+    async addUser({ uin, uid, operator, remark }) {
+        const [user, isCreated] = await WhitelistModel.findOrCreate({
+            where: { uin },
             defaults: {
+                uid,
                 operator,
                 remark
             }
@@ -66,8 +55,8 @@ module.exports = {
      * @returns {Promise<number>} - 删除成功的记录数
      */
     async deleteUser(uin) {
-        const deletedRows = await WhitelistAegisModel.destroy({
-            where: { ...aegisSourceWhere.where, uin }
+        const deletedRows = await WhitelistModel.destroy({
+            where: { uin }
         });
         if (deletedRows > 0) {
             logger.info(`Delete whitelist user [${uin}] successfully.`);
@@ -76,11 +65,21 @@ module.exports = {
     },
 
     /**
-     * 获取 Aegis DB 中的白名单数据 post 到 acceptor
+     * 根据 uin 主键更新记录
+     * @param {string} uin
+     * @param {Object} values - 有更新的 fields
+     */
+    async updateUserByPk(uin, values) {
+        const [afftedRows] = await WhitelistModel.update(values, { where: { uin } });
+        return afftedRows > 0;
+    },
+
+    /**
+     * 白名单更新后， post 到 acceptor
      */
     async postToAcceptor() {
-        const whitelist = await WhitelistAegisModel.findAll();
-        const conciseWhitelist = whitelist.map(o => ({ uin: o.uin }));
+        const whitelist = await WhitelistModel.findAll();
+        const conciseWhitelist = whitelist.map(o => ({ uin: o.uin, uid: o.uid }));
         const options = {
             method: 'POST',
             uri: global.pjconfig.acceptor.pushWhitelistUrl,
@@ -92,34 +91,5 @@ module.exports = {
 
         await request(options);
         logger.info('Post whitelist to Acceptor successfully.');
-    },
-
-    /**
-     * 同步 turtle 白名单到 Aegis
-     */
-    async syncTurtleWhiteList() {
-        logger.info('Start sync Aegis whitelist from Turtle...');
-        const turtleRecords = await WhitelistTurtleModel.findAll();
-        // only concern aegis records with turtle source
-        const aegisRecords = await WhitelistAegisModel.findAll(turtleSourceWhere);
-
-        // compare differences in two tables, then insert and delete in aegis records
-        // aegisRecords - turtleRecords = records that need to be deleted(temporary whitelist)
-        const deletedRecords = _differenceBy(aegisRecords, turtleRecords, 'uin');
-        if (deletedRecords.length) {
-            await WhitelistAegisModel.destroy({
-                where: { ...turtleSourceWhere.where, uin: deletedRecords.map(o => o.uin) }
-            });
-        }
-        // turtleRecords - aegisRecords = new whitelist records
-        const insertedRecords = _differenceBy(turtleRecords, aegisRecords, 'uin');
-        if (insertedRecords.length) {
-            await WhitelistAegisModel.bulkCreate(insertedRecords.map(transformTurtleToAegis));
-        }
-        logger.info(
-            `Successfully sync Aegis whitelist from Turtle: delete ${
-                deletedRecords.length
-            }, insert ${insertedRecords.length}`
-        );
     }
 };

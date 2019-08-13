@@ -10,7 +10,7 @@ const sequelizeOptions = {
     },
     define: {
         // The `timestamps` field specify whether or not the `createdAt` and `updatedAt` fields will be created.
-        timestamps: false,
+        timestamps: true,
         freezeTableName: true,
         underscored: true
     },
@@ -18,8 +18,5 @@ const sequelizeOptions = {
 };
 
 module.exports = {
-    whiteList: {
-        turtleSequelize: new Sequelize(whitelistConfig.turtle, sequelizeOptions),
-        aegisSequelize: new Sequelize(whitelistConfig.aegis, sequelizeOptions)
-    }
+    whiteList: new Sequelize(whitelistConfig, sequelizeOptions)
 };
