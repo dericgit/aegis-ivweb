@@ -239,6 +239,40 @@ function checkReportID(id, req) {
     return [true];
 }
 
+function checkWhitelist(req, res) {
+    let param = req.query || {};
+    if (req.method === 'POST' && req.body && typeof req.body.id !== 'undefined') {
+        param = req.body || {};
+    }
+
+    const id = param.id - 0;
+    const uin = param.uin;
+
+    if (!id || !uin || !global.whitelist || Object.keys(global.whitelist).length === 0) {
+        return res.status(204);
+    }
+
+    const pass = checkReportID(id, req);
+    if (!pass) {
+        return badRequest(res);
+    }
+
+    let is_in_white_list = false;
+    if (global.whitelist[0]) {
+        is_in_white_list = !!global.whitelist[0][uin]; 
+    }
+    if (!is_in_white_list && global.whitelist[id]) {
+        is_in_white_list = !!global.whitelist[id][uin];
+    }
+
+    return res.status(200).json({
+        retcode: 0,
+        result: {
+            is_in_white_list
+        }
+    });
+}
+
 /* -------------------------------------------------------------------------- */
 /*                                   routes                                   */
 /* -------------------------------------------------------------------------- */
@@ -356,40 +390,10 @@ app.use('/badjs/offlineLog', function(req, res) {
             );
         });
     })
-
     /* --------------------------------- 是否白名单用户 -------------------------------- */
-    .use('/badjs/is-whitelist-user', (req, res) => {
-        let param = req.query || {};
-        if (req.method === 'POST' && req.body && typeof req.body.id !== 'undefined') {
-            param = req.body || {};
-        }
-
-        const id = param.id - 0;
-        const uin = param.uin;
-
-        const pass = checkReportID(id, req);
-        if (!pass) {
-            return badRequest(res);
-        }
-
-        param.id = id;
-
-        let is_in_white_list = false;
-        if (global.whitelist && global.whitelist[0]) {
-            is_in_white_list = !!global.whitelist[0][uin]; 
-        }
-        if (!is_in_white_list && global.whitelist[id]) {
-            is_in_white_list = !!global.whitelist[id][uin];
-        }
-
-        res.status(200).json({
-            retcode: 0,
-            result: {
-                is_in_white_list
-            }
-        });
-    })
-
+    .use('/badjs/:id/:uin', checkWhitelist)
+    /* --------------------------------- 是否白名单用户 -------------------------------- */
+    .use('/badjs/is-whitelist-user', checkWhitelist)
     /* ---------------------------------- 日志上报 ---------------------------------- */
     .use('/badjs', function(req, res) {
         let param = req.query || {};
