@@ -17,9 +17,14 @@ const logger = log4js.getLogger();
 const path = require('path');
 
 const dbPath = path.join(__dirname, '..', 'project.db');
+const whitelistPath = path.join(__dirname, '..', 'whitelist.db');
 
 if (!fs.existsSync(dbPath)) {
     fs.writeFileSync(dbPath, '{}', 'utf8');
+}
+
+if (!fs.existsSync(whitelistPath)) {
+    fs.writeFileSync(whitelistPath, '{}', 'utf8');
 }
 
 const app = express();
@@ -32,7 +37,7 @@ app.use(
     })
 );
 
-const ProjectService = function(clusters) {
+const syncService = function(clusters) {
     const dispatchCluster = function(data) {
         for (var i = 0; i < clusters.length; i++) {
             clusters[i].send(data);
@@ -46,8 +51,7 @@ const ProjectService = function(clusters) {
             param = req.body;
         }
 
-        if (param.auth != 'badjsAccepter' || !param.projectsInfo) {
-        } else {
+        if (param.auth === 'badjsAcceptor' && param.projectsInfo) {
             dispatchCluster({
                 projectsInfo: param.projectsInfo
             });
@@ -59,13 +63,31 @@ const ProjectService = function(clusters) {
 
         res.writeHead(200);
         res.end();
-    }).listen(9001);
+    })
+        .use('/syncWhitelist', (req, res) => {
+            if (req.method === 'POST') {
+                const payload = req.body;
+                if (payload.auth === 'badjsAcceptor' && payload.whitelist) {
+                    dispatchCluster({
+                        whitelist: payload.whitelist
+                    });
 
-    var info = fs.readFileSync(dbPath, 'utf-8');
+                    fs.writeFile(whitelistPath, JSON.stringify(payload.whitelist), () => {
+                        logger.info('update whitelist.db');
+                    });
+                }
+            }
+            res.status(200).end();
+        })
+        .listen(9001);
+
+    const info = fs.readFileSync(dbPath, 'utf-8');
+    const whitelist = fs.readFileSync(whitelistPath, 'utf-8');
 
     dispatchCluster({
-        projectsInfo: info
+        projectsInfo: info,
+        whitelist
     });
 };
 
-module.exports = ProjectService;
+module.exports = syncService;

@@ -12,7 +12,7 @@ var UserService = require('./UserService');
 var dateFormat = require("../utils/dateFormat");
 var StatisticsService = require('./StatisticsService');
 var scoreLib = require('../lib/getScore.js');
-var sendEmail = require("../utils/" + global.pjconfig.email.module);
+var sendEmail = require('../utils/ivwebMail');
 var sendApplyEmail = require('../utils/ivwebMail_for_single');
 
 var DAY_LENGTH = 30;
@@ -126,6 +126,7 @@ EmailService.prototype = {
 
             var total = data.total;
             var viewPv = 0, score = 0;
+            if (total_top > total) total_top = total;
             if (data.pvData && data.pvData.length > 0) {
                 viewPv = data.pvData[0].pv;
                 score = scoreLib.handleScore(viewPv, total || 0);
@@ -177,14 +178,12 @@ EmailService.prototype = {
             } else {
                 var orderByApplyId = {};
                 userlist.forEach(function (v) {
-                    // 兼容没有登陆过的用户，自动拼接 邮箱后缀
-                    if (!v.email) {
-                        v.email = v.loginName + global.pjconfig.email.emailSuffix;
-                    }
-                    if (orderByApplyId[v.applyId]) {
-                        orderByApplyId[v.applyId].push(v);
-                    } else {
-                        orderByApplyId[v.applyId] = [v];
+                    if (v.email) {
+                        if (orderByApplyId[v.applyId]) {
+                            orderByApplyId[v.applyId].push(v);
+                        } else {
+                            orderByApplyId[v.applyId] = [v];
+                        }
                     }
                 });
                 var count = 0;
@@ -218,7 +217,6 @@ EmailService.prototype = {
                             if (err) return logger.error('Send email statisticsService queryById error ' + applyId);
 
                             if (data && data.length > 0 && data[0].content && data[0].content.length > 0) {
-
                                 that.statisticsService.queryByChart({
                                     projectId: applyId,
                                     timeScope: 2

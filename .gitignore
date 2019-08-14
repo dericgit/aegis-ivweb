@@ -231,9 +231,12 @@ badjs-web/static/scoreimg/
 ## webstorm
 #############
 .idea/
+.vscode/
+.pm2/
 badjs-installer
 %*
 offline_log
 uploads
 *.example
 *config.json
+package-lock.json

@@ -11,6 +11,7 @@ const logger = log4js.getLogger();
 const path = require('path');
 
 const monitor = require('./monitor');
+const utils = require('./utils/utils')
 
 /* -------------------------------------------------------------------------- */
 /*                                    init                                    */
@@ -38,7 +39,7 @@ const responseHeader = {
 };
 
 global.projectsInfo = {};
-// listen for projects update from master
+// listen for projects and whitelist update from master
 process.on('message', function(data) {
     const json = data;
     let info;
@@ -52,6 +53,9 @@ process.on('message', function(data) {
             }
             global.projectsInfo = info;
         }
+    }
+    if (json.whitelist) {
+        global.whitelist = json.whitelist;
     }
 });
 
@@ -353,8 +357,40 @@ app.use('/badjs/offlineLog', function(req, res) {
         });
     })
 
-    /* ---------------------------------- 日志上报 ---------------------------------- */
+    /* --------------------------------- 是否白名单用户 -------------------------------- */
+    .use('/badjs/is-whitelist-user', (req, res) => {
+        let param = req.query || {};
+        if (req.method === 'POST' && req.body && typeof req.body.id !== 'undefined') {
+            param = req.body || {};
+        }
 
+        const id = param.id - 0;
+        const uin = param.uin;
+
+        const pass = checkReportID(id, req);
+        if (!pass) {
+            return badRequest(res);
+        }
+
+        param.id = id;
+
+        let is_in_white_list = false;
+        if (global.whitelist && global.whitelist[0]) {
+            is_in_white_list = !!global.whitelist[0][uin]; 
+        }
+        if (!is_in_white_list && global.whitelist[id]) {
+            is_in_white_list = !!global.whitelist[id][uin];
+        }
+
+        res.status(200).json({
+            retcode: 0,
+            result: {
+                is_in_white_list
+            }
+        });
+    })
+
+    /* ---------------------------------- 日志上报 ---------------------------------- */
     .use('/badjs', function(req, res) {
         let param = req.query || {};
         if (req.method === 'POST' && req.body && typeof req.body.id !== 'undefined') {
@@ -388,6 +424,7 @@ app.use('/badjs/offlineLog', function(req, res) {
         res.writeHead(204, responseHeader);
         res.end();
     })
+
     // master 进程监听 port 端口，轮流分发给 4 个 worker 进程处理连接
     .listen(global.pjconfig.port, () => {
         logger.info(

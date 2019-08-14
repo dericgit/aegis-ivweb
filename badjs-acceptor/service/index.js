@@ -76,7 +76,7 @@ async function quantityLimitNotify(projectID, quantityLimit, isHalfNotify) {
     const mentionedList = [];
     // find project info
     const project = global.projectsInfo[projectID] || {};
-    const { user: owner, name = '' } = project;
+    const { owner, name = '' } = project;
 
     if (owner) {
         mentionedList.push(owner);

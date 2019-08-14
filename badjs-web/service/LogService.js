@@ -6,6 +6,7 @@ var http = require('http');
 
 var log4js = require('log4js'),
     BusinessService = require('./BusinessService'),
+    WhitelistService = require('./WhitelistService'),
     _ = require('underscore'),
     logger = log4js.getLogger();
 
@@ -61,7 +62,6 @@ LogService.prototype = {
         });
 
         var businessService = new BusinessService();
-
         var push = function () {
             businessService.findBusiness(function (err, item) {
                 var projectsInfo = {};
@@ -95,7 +95,7 @@ LogService.prototype = {
                 request.post(self.pushProjectUrl, {
                     form: {
                         projectsInfo: JSON.stringify(projectsInfo),
-                        auth: "badjsAccepter"
+                        auth: "badjsAcceptor"
                     }
                 }, function (err) {
                     if (err) {
@@ -125,6 +125,7 @@ LogService.prototype = {
                 });
 
             });
+            WhitelistService.postToAcceptor();
         };
 
         push();

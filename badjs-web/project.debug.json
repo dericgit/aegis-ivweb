@@ -10,12 +10,16 @@
         "password": "root",
         "database": "badjs"
     },
+    "db": {
+        "whitelist": "mysql://root:root@localhost:3306/badjs"
+    },
     "storage" : {
         "errorMsgTopUrl" : "http://127.0.0.1:9000/errorMsgTop",
         "queryUrl" : "http://127.0.0.1:9000/query"
     },
     "acceptor": {
-        "pushProjectUrl" : "http://127.0.0.1:9001/getProjects"
+        "pushProjectUrl" : "http://127.0.0.1:9001/getProjects",
+        "pushWhitelistUrl": "http://127.0.0.1:9001/syncWhitelist"
     },
     "openapi": {
         "pushProjectUrl" : "http://127.0.0.1:9002/getProjects"
@@ -35,8 +39,7 @@
         "emailSuffix" : "@demo.com",
         "smtp": "smtp.demo.com",
         "time": "09:00:00",
-        "top": 20,
-        "module": "email"
+        "top": 20
     },
     "ping": [17, 182],
     "errorMailTo": "xx@yy.com",
