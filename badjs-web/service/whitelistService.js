@@ -79,12 +79,19 @@ module.exports = {
      */
     async postToAcceptor() {
         const whitelist = await WhitelistModel.findAll();
-        const conciseWhitelist = whitelist.map(o => ({ uin: o.uin, uid: o.uid }));
+        const conciseWhitelist = whitelist.reduce((p, c) => {
+            if (!p[c.aegisid]) {
+                p[c.aegisid] = {};
+            }
+            p[c.aegisid][c.uin] = 1; 
+            return p;
+        }, {});
         const options = {
             method: 'POST',
             uri: global.pjconfig.acceptor.pushWhitelistUrl,
             body: {
-                whitelist: conciseWhitelist
+                whitelist: conciseWhitelist,
+                auth: 'badjsAcceptor'
             },
             json: true // Automatically stringifies the body to JSON
         };

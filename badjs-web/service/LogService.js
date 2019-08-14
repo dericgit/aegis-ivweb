@@ -95,7 +95,7 @@ LogService.prototype = {
                 request.post(self.pushProjectUrl, {
                     form: {
                         projectsInfo: JSON.stringify(projectsInfo),
-                        auth: "badjsAccepter"
+                        auth: "badjsAcceptor"
                     }
                 }, function (err) {
                     if (err) {

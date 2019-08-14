@@ -11,7 +11,8 @@ const WhitelistAegis = whitelistSequelize.define('b_whitelist', {
     uid: Sequelize.STRING(20),
     guid: Sequelize.STRING(64),
     remark: Sequelize.STRING(64),
-    operator: Sequelize.STRING(64)
+    operator: Sequelize.STRING(64),
+    aegisid: Sequelize.STRING(20)
 });
 WhitelistAegis.removeAttribute('id');
 

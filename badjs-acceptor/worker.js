@@ -359,12 +359,29 @@ app.use('/badjs/offlineLog', function(req, res) {
 
     /* --------------------------------- 是否白名单用户 -------------------------------- */
     .use('/badjs/is-whitelist-user', (req, res) => {
-        const cookieUin = req.cookies.p_uin;
-        let isWhitelistUser = false;
-        if (cookieUin) {
-            const uin = utils.getRequestUser(req.cookies);
-            isWhitelistUser = !!global.whitelist.find(item => item.uin == uin);
+        let param = req.query || {};
+        if (req.method === 'POST' && req.body && typeof req.body.id !== 'undefined') {
+            param = req.body || {};
         }
+
+        const id = param.id - 0;
+        const uin = param.uin;
+
+        // const pass = checkReportID(id, req);
+        // if (!pass) {
+        //     return badRequest(res);
+        // }
+
+        param.id = id;
+
+        let isWhitelistUser = false;
+        if (global.whitelist && global.whitelist[0]) {
+            isWhitelistUser = global.whitelist[0].includes(uin); 
+        }
+        if (!isWhitelistUser && global.whitelist[id]) {
+            isWhitelistUser = global.whitelist[id].includes(uin);
+        }
+
         res.status(200).json({
             retcode: 0,
             result: {

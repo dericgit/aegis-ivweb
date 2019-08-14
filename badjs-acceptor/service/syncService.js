@@ -51,8 +51,7 @@ const syncService = function(clusters) {
             param = req.body;
         }
 
-        if (param.auth != 'badjsAccepter' || !param.projectsInfo) {
-        } else {
+        if (param.auth === 'badjsAcceptor' && param.projectsInfo) {
             dispatchCluster({
                 projectsInfo: param.projectsInfo
             });
@@ -68,7 +67,7 @@ const syncService = function(clusters) {
         .use('/syncWhitelist', (req, res) => {
             if (req.method === 'POST') {
                 const payload = req.body;
-                if (payload.auth === 'badjsAccepter' && payload.whitelist) {
+                if (payload.auth === 'badjsAcceptor' && payload.whitelist) {
                     dispatchCluster({
                         whitelist: payload.whitelist
                     });
