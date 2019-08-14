@@ -5,7 +5,7 @@ var path      = require('path');
 var Sequelize = require('sequelize');
 var basename  = path.basename(__filename);
 var env       = 'production';
-var config    = require('../config/config.js')[env];
+var config    = global.pjconfig.speed_mysql.production;
 var db        = {};
 
 if (config.use_env_variable) {

@@ -10,6 +10,10 @@
         "password": "root",
         "database": "badjs"
     },
+    "speed_mysql" : {
+        "production": {
+        }
+    },
     "db": {
         "whitelist": "mysql://root:root@localhost:3306/badjs"
     },
