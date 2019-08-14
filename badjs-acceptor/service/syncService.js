@@ -72,7 +72,7 @@ const syncService = function(clusters) {
                         whitelist: payload.whitelist
                     });
 
-                    fs.writeFile(whitelistPath, payload.whitelist, () => {
+                    fs.writeFile(whitelistPath, JSON.stringify(payload.whitelist), () => {
                         logger.info('update whitelist.db');
                     });
                 }

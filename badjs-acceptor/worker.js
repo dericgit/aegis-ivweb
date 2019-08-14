@@ -367,25 +367,25 @@ app.use('/badjs/offlineLog', function(req, res) {
         const id = param.id - 0;
         const uin = param.uin;
 
-        // const pass = checkReportID(id, req);
-        // if (!pass) {
-        //     return badRequest(res);
-        // }
+        const pass = checkReportID(id, req);
+        if (!pass) {
+            return badRequest(res);
+        }
 
         param.id = id;
 
-        let isWhitelistUser = false;
+        let is_in_white_list = false;
         if (global.whitelist && global.whitelist[0]) {
-            isWhitelistUser = global.whitelist[0].includes(uin); 
+            is_in_white_list = !!global.whitelist[0][uin]; 
         }
-        if (!isWhitelistUser && global.whitelist[id]) {
-            isWhitelistUser = global.whitelist[id].includes(uin);
+        if (!is_in_white_list && global.whitelist[id]) {
+            is_in_white_list = !!global.whitelist[id][uin];
         }
 
         res.status(200).json({
             retcode: 0,
             result: {
-                isWhitelistUser
+                is_in_white_list
             }
         });
     })
