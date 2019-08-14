@@ -240,16 +240,15 @@ function checkReportID(id, req) {
 }
 
 function checkWhitelist(req, res) {
-    let param = req.query || {};
-    if (req.method === 'POST' && req.body && typeof req.body.id !== 'undefined') {
-        param = req.body || {};
-    }
-
-    const id = param.id - 0;
-    const uin = param.uin;
+    let params = req.params;
+    const id = params.id - 0;
+    const uin = params.uin;
 
     if (!id || !uin || !global.whitelist || Object.keys(global.whitelist).length === 0) {
-        return res.status(204);
+        responseHeader['Content-length'] = 0;
+        res.writeHead(204, responseHeader);
+        res.end();
+        return;
     }
 
     const pass = checkReportID(id, req);
@@ -391,9 +390,7 @@ app.use('/badjs/offlineLog', function(req, res) {
         });
     })
     /* --------------------------------- 是否白名单用户 -------------------------------- */
-    .use('/badjs/:id/:uin', checkWhitelist)
-    /* --------------------------------- 是否白名单用户 -------------------------------- */
-    .use('/badjs/is-whitelist-user', checkWhitelist)
+    .use('/aegis/:id/:uin', checkWhitelist)
     /* ---------------------------------- 日志上报 ---------------------------------- */
     .use('/badjs', function(req, res) {
         let param = req.query || {};

@@ -82,7 +82,13 @@ const syncService = function(clusters) {
         .listen(9001);
 
     const info = fs.readFileSync(dbPath, 'utf-8');
-    const whitelist = fs.readFileSync(whitelistPath, 'utf-8');
+    let whitelist = fs.readFileSync(whitelistPath, 'utf-8');
+
+    try {
+        whitelist = JSON.parse(whitelist) || {};
+    } catch (e) {
+        whitelist = {};
+    }
 
     dispatchCluster({
         projectsInfo: info,
