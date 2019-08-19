@@ -10,7 +10,7 @@ module.exports = function () {
         const pushProject = function () {
             logService.pushProject(function (err) {
                 if (err) {
-                    logger.warn('push project on system start and error ' + err);
+                    logger.warn('push project on system start and error ');
                 } else {
                     logger.info('push project on system start');
                 }

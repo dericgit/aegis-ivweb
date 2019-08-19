@@ -95,8 +95,11 @@ module.exports = {
             },
             json: true // Automatically stringifies the body to JSON
         };
-
-        await request(options);
-        logger.info('Post whitelist to Acceptor successfully.');
+        try {
+            await request(options);
+            logger.info('Post whitelist to Acceptor successfully.');
+        } catch (e) {
+            logger.warn('Post whitelist to Acceptor fail.');
+        }
     }
 };
