@@ -14,14 +14,6 @@
   "scripts": {
     "test": "gulp"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/BetterJS/badjs-storage.git"
-  },
   "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/BetterJS/badjs-storage/issues"
-  },
-  "homepage": "https://github.com/BetterJS/badjs-storage"
+  "license": "MIT"
 }

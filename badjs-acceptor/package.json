@@ -19,14 +19,5 @@
   "scripts": {
     "test": ""
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/BetterJS/badjs-accepter.git"
-  },
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/BetterJS/badjs-accepter/issues"
-  },
-  "homepage": "https://github.com/BetterJS/badjs-accepter"
+  "license": "MIT"
 }

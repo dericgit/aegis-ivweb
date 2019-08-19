@@ -1,5 +1,5 @@
 {
-  "name": "badjs-web",
+  "name": "aegis-web",
   "version": "0.1.0",
   "description": "",
   "main": "app.js",
@@ -13,15 +13,11 @@
     "compression": "^1.7.0",
     "cookie-parser": "^1.3.3",
     "crypto": "0.0.3",
-    "ejs-loader": "^0.2.1",
     "emailjs": "0.3.16",
-    "expose-loader": "^0.6.0",
     "express": "^4.9.8",
-    "express-micro-tpl": "^0.3.1",
     "express-mysql-session": "^2.1.0",
     "express-session": "^1.9.0",
     "ip2region": "^1.7.0",
-    "jquery": "^2.2.4",
     "lodash": "^4.17.14",
     "log4js": "^0.6.38",
     "map-stream": "0.0.5",
@@ -34,8 +30,6 @@
     "nodemailer": "^2.6.4",
     "orm": "^5.0.4",
     "orm-transaction": "0.0.2",
-    "passport": "^0.2.1",
-    "passport-local": "^1.0.0",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
     "rimraf": "^2.6.3",
@@ -47,10 +41,6 @@
     "ws": "^6.2.1",
     "xss-filters": "^1.2.7"
   },
-  "devDependencies": {
-    "webpack": "~1.8.5",
-    "glob": "~5.0.5"
-  },
-  "author": "",
+  "author": "ivweb",
   "license": "MIT"
 }
