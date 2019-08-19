@@ -65,7 +65,6 @@ var userAction = {
                 if (err || !user || (crypto.createHash("md5").update(req.body.password).digest('hex') != user.password)) {
                     res.render('login', {
                         name: xss.inDoubleQuotedAttr(req.body.username),
-                        isUseOA: !!global.pjconfig.oos,
                         index: "login",
                         message: "帐号或则密码错误"
                     });
@@ -82,7 +81,7 @@ var userAction = {
             });
 
         } else {
-            res.render('login', { isUseOA: !!global.pjconfig.oos, message: "" });
+            res.render('login', { message: "" });
         }
 
     },
@@ -97,21 +96,18 @@ var userAction = {
         if (method == "post") {
             if (!req.body.username || !req.body.password || !req.body.email) {
                 res.render('register', {
-                    isUseOA: !!global.pjconfig.oos,
                     name: req.body.username,
                     message: "帐号密码不能为空"
                 });
                 return;
             } else if (req.body.password != req.body.password2) {
                 res.render('register', {
-                    isUseOA: !!global.pjconfig.oos,
                     name: req.body.username,
                     message: "密码和确认密码不一致"
                 });
                 return;
             } else if (!/^[A-Za-z]{1,20}$/.test(req.body.username)) {
                 return res.render('register', {
-                    isUseOA: !!global.pjconfig.oos,
                     name: req.body.username,
                     message: "名字不符合规范"
                 });
@@ -123,13 +119,11 @@ var userAction = {
                 if (err) {
                     logger.error("register user error : " + err.toString());
                     res.render('register', {
-                        isUseOA: !!global.pjconfig.oos,
                         name: req.body.username,
                         message: "系统错误，请联系管理员"
                     });
                 } else if (user) {
                     res.render('register', {
-                        isUseOA: !!global.pjconfig.oos,
                         name: req.body.username,
                         message: "用户已经存在"
                     });
@@ -144,16 +138,16 @@ var userAction = {
                     };
                     userDao.create(newUser, function (err) {
                         if (err) {
-                            res.render('register', { isUseOA: !!global.pjconfig.oos, message: "系统错误，请联系管理员" });
+                            res.render('register', { message: "系统错误，请联系管理员" });
                         }
-                        res.render('register', { isUseOA: !!global.pjconfig.oos, type: "1", message: '注册成功 ' });
+                        res.render('register', { type: "1", message: '注册成功 ' });
 
                     });
                 }
             });
 
         } else {
-            res.render('register', { isUseOA: !!global.pjconfig.oos, message: "" });
+            res.render('register', { message: "" });
         }
 
     },
