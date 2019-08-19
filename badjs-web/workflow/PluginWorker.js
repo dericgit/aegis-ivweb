@@ -17,7 +17,7 @@ const apiType = ['route'];
 // 插件的信息
 const list = [];
 let plugins = [];
-let pluginObj, login = {};
+let pluginObj;
 
 dirs.forEach(item => {
     var pluginObj = require(`${pluginPath}/${item}/index.js`);
@@ -26,8 +26,7 @@ dirs.forEach(item => {
 });
 
 function handlePlugin(plugin) {
-    getRoutePluginInfo(plugin);
-    getLoginPluginInfo(plugin);
+    getRoutePluginInfo(plugin)
 }
 
 function getRoutePluginInfo(plugin) {
@@ -45,15 +44,6 @@ function getRoutePluginInfo(plugin) {
 
     }
 }
-
-function getLoginPluginInfo(plugin) {
-    if (plugin.login) {
-
-        login = plugin.login;
-
-    }
-}
-
 
 function getList() {
     return list;
@@ -88,7 +78,6 @@ function registerRoute(app) {
 
 module.exports = {
     getList,
-    login, // 注释表示暂时不使用 oa 验证
     registerRoute
 };
 

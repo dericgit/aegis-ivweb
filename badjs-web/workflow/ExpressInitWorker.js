@@ -1,6 +1,4 @@
 const express = require('express');
-const tpl = require('express-micro-tpl');
-const crypto = require('crypto');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 const bodyParser = require('body-parser');
@@ -25,10 +23,6 @@ const sessionStore = new MySQLStore({
     password: mysql.password,
     database: mysql.database
 });
-
-app.set('views', path.join(__dirname, '..', 'views'));
-app.set('view engine', 'html');
-app.engine('html', tpl.__express);
 app.use(compress());
 app.use(session({
     key: 'aegis_session_cookie',
@@ -47,7 +41,6 @@ app.use(cookieParser());
 
 app.use('/static', serveStatic(path.join(__dirname, '..', 'static')));
 app.use('/sm', serveStatic(global.pjconfig.sourcemap));
-
 
 logger.info('connect mysql: ' + msqlUrl);
 
@@ -73,25 +66,6 @@ app.use(orm.express(msqlUrl, {
 
 app.use(function (err, req, res, next) {
     res.send(err.stack);
-});
-
-if (global.pjconfig.oos && global.pjconfig.oos.module) {
-    app.use('/user', require('../oos/' + global.pjconfig.oos.module));
-}
-
-app.use('/user', function (req, res, next) {
-    if (pluginHandler.login) {
-        pluginHandler.login.check(req, res, next);
-    } else {
-        const { user } = req.session;
-        if (!user) {
-            return res.redirect(req.protocol + '://' + req.get('host') + '/login.html');
-        } else if (user.verify_state !== 2) {
-            return res.redirect(req.protocol + '://' + req.get('host'));
-        } else {
-            next();
-        }
-    }
 });
 
 router(app);
