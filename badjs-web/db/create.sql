@@ -187,3 +187,23 @@ CREATE TABLE `b_hardware` (
   `createTime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=latin1;
+
+
+
+--
+-- Table structure for table `b_whitelist`
+--
+
+DROP TABLE IF EXISTS `b_whitelist`;
+
+CREATE TABLE `b_whitelist` (
+  `uin` varchar(20) NOT NULL DEFAULT '',
+  `uid` varchar(20) DEFAULT NULL,
+  `guid` varchar(64) DEFAULT NULL COMMENT '设备号',
+  `remark` varchar(64) DEFAULT NULL COMMENT '备注',
+  `operator` varchar(64) NOT NULL DEFAULT '' COMMENT '操作人',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `aegisid` varchar(20) DEFAULT '0',
+  PRIMARY KEY (`uin`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
