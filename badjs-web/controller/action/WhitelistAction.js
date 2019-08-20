@@ -80,9 +80,17 @@ function assembleWhere(conditions) {
 
 module.exports = {
     async addUser(payload, req, res) {
-        const { uin, uid, guid, remark, aegisid } = payload;
-        if (!checkUin(res, uin)) return;
+        const { uin, uid, guid, remark } = payload;
+        let aegisid = payload.aegisid;
+        if (aegisid instanceof Array && !~aegisid.indexOf('0') && !~aegisid.indexOf(0)) {
+            aegisid = `/${aegisid.join('/')}/`;
+        } else if (~aegisid.indexOf('0') || ~aegisid.indexOf(0)) {
+            aegisid = `0`
+        } else {
+            aegisid = '';
+        }
 
+        if (!checkUin(res, uin)) return;
         const { loginName: operator } = req.session.user;
 
         try {
@@ -92,7 +100,7 @@ module.exports = {
                 guid,
                 operator,
                 remark,
-                aegisid: aegisid instanceof Array ? `/${aegisid.join('/')}/` : aegisid ? `/${aegisid}/` : ''
+                aegisid
             });
             if (!isCreated) {
                 return res.status(400).json({
