@@ -37,8 +37,7 @@ function checkUin(res, uin) {
 
 async function syncAndResponse(res) {
     try {
-        // todo:
-        // await whitelistService.postToAcceptor();
+        await whitelistService.postToAcceptor();
         res.status(200).json({
             ret: 0,
             msg: 'success'
@@ -80,10 +79,7 @@ module.exports = {
                 msg: '参数错误'
             });
         }
-        // todo:
-        // if (!checkUin(res, uin)) return;
-        // const { loginName: operator } = req.session.user;
-        const { loginName: operator } = { loginName: 'duanyuanping' };
+        const { loginName: operator } = req.session.user;
 
         try {
             const [, isCreated] = await whitelistService.addUser({
@@ -118,9 +114,7 @@ module.exports = {
             })
         }
 
-        // todo:
-        // const { loginName, role } = req.session.user;
-        const { loginName, role } = { loginName: 'duanyuanping', role: 1 };
+        const { loginName, role } = req.session.user;
 
         try {
             const targetUser = await whitelistService.findBatchUsers({

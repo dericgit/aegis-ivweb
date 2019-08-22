@@ -89,16 +89,15 @@ module.exports = function(app) {
 
         params = _.extend({}, params);
 
-        // todo:
-        // if (!req.session.user) {
-        //     res.json({ ret: -2, msg: 'should login' });
-        //     return;
-        // }
+        if (!req.session.user) {
+            res.json({ ret: -2, msg: 'should login' });
+            return;
+        }
 
-        // if (req.session.user.verify_state !== 2) {
-        //     res.json({ ret: -2, msg: 'waiting for admin verify' });
-        //     return;
-        // }
+        if (req.session.user.verify_state !== 2) {
+            res.json({ ret: -2, msg: 'waiting for admin verify' });
+            return;
+        }
         //根据不同actionName 调用不同action
         try {
             switch (action) {
@@ -126,9 +125,7 @@ module.exports = function(app) {
                 case 'whitelist':
                     // 统一做层鉴权控制
                     (() => {
-                        // todo:
-                        // const { role } = req.session.user;
-                        const { role } = { role: 1 }
+                        const { role } = req.session.user;
                         if (role !== ROLE.ADMIN) {
                             return res.status(200).json({
                                 ret: 1003,
