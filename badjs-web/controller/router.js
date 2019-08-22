@@ -28,6 +28,10 @@ const log4js = require('log4js');
 const logger = log4js.getLogger();
 const homePage = pjConfig.homepage;
 
+const ROLE = {
+    ADMIN: 1
+};
+
 module.exports = function(app) {
     realtimeService(app);
 
@@ -119,7 +123,17 @@ module.exports = function(app) {
                     SourceMapAction[operation](params, req, res);
                     break;
                 case 'whitelist':
-                    WhitelistAction[operation](params, req, res);
+                    // 统一做层鉴权控制
+                    (() => {
+                        const { role } = req.session.user;
+                        if (role !== ROLE.ADMIN) {
+                            return res.status(200).json({
+                                ret: 1003,
+                                msg: '权限不足'
+                            });
+                        }
+                        WhitelistAction[operation](params, req, res);
+                    })();
                     break;
                 default:
                     next();
