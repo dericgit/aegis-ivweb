@@ -28,6 +28,10 @@ const log4js = require('log4js');
 const logger = log4js.getLogger();
 const homePage = pjConfig.homepage;
 
+const ROLE = {
+    ADMIN: 1
+};
+
 module.exports = function(app) {
     realtimeService(app);
 
@@ -85,15 +89,16 @@ module.exports = function(app) {
 
         params = _.extend({}, params);
 
-        if (!req.session.user) {
-            res.json({ ret: -2, msg: 'should login' });
-            return;
-        }
+        // todo:
+        // if (!req.session.user) {
+        //     res.json({ ret: -2, msg: 'should login' });
+        //     return;
+        // }
 
-        if (req.session.user.verify_state !== 2) {
-            res.json({ ret: -2, msg: 'waiting for admin verify' });
-            return;
-        }
+        // if (req.session.user.verify_state !== 2) {
+        //     res.json({ ret: -2, msg: 'waiting for admin verify' });
+        //     return;
+        // }
         //根据不同actionName 调用不同action
         try {
             switch (action) {
@@ -119,7 +124,19 @@ module.exports = function(app) {
                     SourceMapAction[operation](params, req, res);
                     break;
                 case 'whitelist':
-                    WhitelistAction[operation](params, req, res);
+                    // 统一做层鉴权控制
+                    (() => {
+                        // todo:
+                        // const { role } = req.session.user;
+                        const { role } = { role: 1 }
+                        if (role !== ROLE.ADMIN) {
+                            return res.status(200).json({
+                                ret: 1003,
+                                msg: '权限不足'
+                            });
+                        }
+                        WhitelistAction[operation](params, req, res);
+                    })();
                     break;
                 default:
                     next();
