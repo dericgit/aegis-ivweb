@@ -155,6 +155,36 @@ var StatisticsAction = {
         });
     },
 
+    async getTopError(param, req, res) {
+        try {
+            const { user }  = req.session;
+            const isAdmin = user.role === 1;
+            const { loginName } = user;
+            let searchName = loginName;
+            if (isAdmin) {
+                loginName = param.userName || loginName
+            }
+            const startDate = param.startDate;
+            const result = await statisticsService.getTopError({searchName, startDate});
+            if (!result) {
+                return res.status(500).json({
+                    ret: 1007,
+                    msg: '获取错误日志列表失败'
+                });
+            }
+
+            res.json({
+                ret: 0,
+                data: result
+            });
+        } catch (error) {
+            return res.status(500).json({
+                ret: 1007,
+                msg: '获取错误失败'
+            });
+        }
+    },
+
     getpvbyid: function (param, req, res) {
         var statisticsService = new StatisticsService();
         statisticsService.getPvById({
