@@ -4,6 +4,8 @@ const moment = require('moment');
 const logger = require('log4js').getLogger();
 const request = require('request-promise-native');
 const WhitelistModel = require('../model/Whitelist');
+const ApplyList = require('../model/ApplyList');
+const whitelistSequelize = require('../config/sequelize').whiteList;
 
 moment.prototype.toMySqlDateTime = function() {
     return this.format('YYYY-MM-DD HH:mm:ss');
@@ -15,8 +17,8 @@ module.exports = {
      * @param {number} params.offset - 偏移量
      * @param {number} params.limit - 单次查找数量
      */
-    async findBatchUsers({ where = {}, limit, offset = 0 }) {
-        return WhitelistModel.findAndCountAll({ where, limit, offset });
+    async findBatchUsers({ where = {}, order, limit, offset = 0 }) {
+        return WhitelistModel.findAndCountAll({ where, order, limit, offset });
     },
 
     /**
@@ -34,13 +36,18 @@ module.exports = {
      * @param {string} param.operator - 操作者
      * @returns {Array}
      */
-    async addUser({ uin, uid, operator, remark }) {
+    async addUser({ uin, openid, aegisid, ...payload }) {
+        const conditionMap = { uin, openid, aegisid };
+        const where = {};
+        for (const key in conditionMap) {
+            if (conditionMap[key] !== undefined) {
+                where[key] = conditionMap[key];
+            }
+        }
         const [user, isCreated] = await WhitelistModel.findOrCreate({
-            where: { uin },
+            where,
             defaults: {
-                uid,
-                operator,
-                remark
+                ...payload
             }
         });
         if (isCreated) {
@@ -51,15 +58,15 @@ module.exports = {
 
     /**
      * 删除白名单用户
-     * @param {number} uin
+     * @param {number} id
      * @returns {Promise<number>} - 删除成功的记录数
      */
-    async deleteUser(uin) {
+    async deleteUser(id) {
         const deletedRows = await WhitelistModel.destroy({
-            where: { uin }
+            where: { id }
         });
         if (deletedRows > 0) {
-            logger.info(`Delete whitelist user [${uin}] successfully.`);
+            logger.info(`Delete whitelist user [${id}] successfully.`);
         }
         return deletedRows;
     },
@@ -69,8 +76,8 @@ module.exports = {
      * @param {string} uin
      * @param {Object} values - 有更新的 fields
      */
-    async updateUserByPk(uin, values) {
-        const [afftedRows] = await WhitelistModel.update(values, { where: { uin } });
+    async updateUserByPk(id, values) {
+        const [afftedRows] = await WhitelistModel.update(values, { where: { id } });
         return afftedRows > 0;
     },
 
@@ -98,5 +105,12 @@ module.exports = {
 
         await request(options);
         logger.info('Post whitelist to Acceptor successfully.');
+    },
+
+    /**
+     * 白名单需求中获取项目列表
+     */
+    async getAegisList({ where = {}, limit, offset = 0 }) {
+        return ApplyList.findAndCountAll({ where, limit, offset });
     }
 };

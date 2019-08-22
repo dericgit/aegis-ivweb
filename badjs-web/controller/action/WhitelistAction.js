@@ -38,57 +38,61 @@ function checkUin(res, uin) {
 async function syncAndResponse(res) {
     try {
         await whitelistService.postToAcceptor();
-        res.status(204).end();
+        res.status(200).json({
+            ret: 0,
+            msg: 'success'
+        });
     } catch (error) {
         logger.error('Post whitelist to acceptor fail!', error);
         res.json({ ret: 1004, msg: `同步白名单到 Acceptor 失败 ${error}` });
     }
 }
 
-function assembleWhere({ operator, uin, uid, guid, remark }) {
+function assembleWhere(conditions) {
     const where = {};
-    if (operator) {
-        where.operator = operator;
-    }
-    if (uin) {
-        where.uin = uin;
-    }
-    if (uid) {
-        where.uid = uid;
-    }
-    if (guid) {
-        where.guid = guid;
-    }
-    if (remark) {
-        where.remark = {
-            [Sequelize.Op.like]: `%${remark}%`
-        };
-    }
+    const exactConditions = ['operator', 'uid', 'aid', 'id', 'aegisid'];
+    const blurConditions = ['remark', 'openid', 'uin'];
+    exactConditions.forEach(con => {
+        if (conditions[con]) {
+            where[con] = conditions[con];
+        }
+    })
+    blurConditions.forEach(con => {
+        if (conditions[con]) {
+            where[con] = {
+                [Sequelize.Op.like]: `%${conditions[con]}%`
+            };
+        }
+    })
+
     return where;
 }
 
 module.exports = {
     async addUser(payload, req, res) {
-        const { uin, uid, guid, remark } = payload;
-        if (!checkUin(res, uin)) return;
+        const { uin, aegisid, openid } = payload;
 
+        // uin和openid至少有一个不为空
+        if ((!uin && !openid) || (typeof aegisid !== 'string' && typeof aegisid !== 'number')) {
+            return res.status(200).json({
+                ret: 1002,
+                msg: '参数错误'
+            });
+        }
         const { loginName: operator } = req.session.user;
+
         try {
             const [, isCreated] = await whitelistService.addUser({
-                uin,
-                uid,
-                guid,
                 operator,
-                remark
+                ...payload
             });
             if (!isCreated) {
-                return res.status(400).json({
+                return res.status(200).json({
                     ret: 1003,
-                    msg: `白名单用户 ${uin} 已经存在！`
+                    msg: `记录${JSON.stringify({ uin, openid, aegisid })}已经存在！`
                 });
             }
-
-            syncAndResponse();
+            syncAndResponse(res);
         } catch (error) {
             responseError(res, error, '添加白名单用户失败');
             logger.error(
@@ -101,41 +105,58 @@ module.exports = {
     },
 
     async deleteUser(payload, req, res) {
-        const { uin } = payload;
-        if (!checkUin(res, uin)) return;
+        const { id } = payload;
+
+        if (!id) {
+            return res.status(200).json({
+                ret: 1002,
+                msg: '参数错误'
+            })
+        }
 
         const { loginName, role } = req.session.user;
 
         try {
-            const targetUser = await whitelistService.findSingleUser({ uin });
-            if (!targetUser) {
-                logger.warn('Does not exist whitelist user: [%d]!', uin);
-                return res.status(500).json({ ret: 1005, msg: `不存在该白名单用户 ${uin}` });
+            const targetUser = await whitelistService.findBatchUsers({
+                where: {
+                    id: id
+                }
+            });
+            if (!targetUser.count) {
+                logger.warn('Does not exist whitelist user: [%d]!', id);
+                return res.status(500).json({ ret: 1005, msg: `不存在该白名单用户 ${id}` });
+            }
+            let cantDel = false;
+            for (const data of targetUser.rows) {
+                if (role !== ROLE.ADMIN && data.operator !== loginName) {
+                    cantDel = true;
+                    break;
+                }
             }
             // 非管理员只能删除自己添加的白名单用户
-            if (role !== ROLE.ADMIN && targetUser.operator !== loginName) {
+            if (cantDel) {
                 logger.error(
-                    'Non-administrators can only delete whiteliste users they have added! uin: [%d], operator: [%s], role: [%d]',
-                    uin,
+                    'Non-administrators can only delete whiteliste users they have added! id: [%d], operator: [%s], role: [%d]',
+                    id,
                     loginName,
                     role
                 );
                 return res
-                    .stats(403)
+                    .status(403)
                     .json({ ret: 1006, msg: '非管理员只能删除自己添加的白名单用户' });
             }
 
-            const deletedRows = await whitelistService.deleteUser(uin);
+            const deletedRows = await whitelistService.deleteUser(id);
             if (deletedRows < 1) {
                 throw new Error(null);
             }
 
-            syncAndResponse();
+            syncAndResponse(res);
         } catch (error) {
             responseError(res, error, '删除白名单用户失败');
             logger.error(
-                'Delete whitelist user fail! uin: [%d], operator: [%s]',
-                uin,
+                'Delete whitelist user fail! id: [%d], operator: [%s]',
+                id,
                 loginName,
                 error
             );
@@ -145,11 +166,14 @@ module.exports = {
     async getUsers(payload, req, res) {
         const findWhere = assembleWhere(payload);
         const { offset = 0, limit = 20 } = payload;
+        let { sort = { key: 'updated_at', order: 'descend' } } = payload;
+        sort = typeof sort === 'string' ? JSON.parse(sort) : sort;
         try {
             const findResults = await whitelistService.findBatchUsers({
                 where: findWhere,
-                offset,
-                limit
+                order: [typeof sort === 'object' ? [`${sort.key}`, `${sort.order.split('end')[0]}`] : ''],
+                offset: parseInt(offset),
+                limit: parseInt(limit)
             });
             const pickResults = findResults.rows.map(item => item.dataValues);
             res.json({
@@ -163,11 +187,22 @@ module.exports = {
     },
 
     async updateUser(payload, req, res) {
-        const { uin, ...values } = payload;
-        if (!checkUin(res, uin)) return;
+        const { uin, openid, id, aegisid, ...other } = payload;
+        // uin和openid至少有一个不为空
+        if (!id || (!uin && !openid) || (typeof aegisid !== 'string' && typeof aegisid !== 'number')) {
+            return res.status(200).json({
+                ret: 1002,
+                msg: '参数错误'
+            });
+        }
 
         try {
-            const result = await whitelistService.updateUserByPk(uin, values);
+            const result = await whitelistService.updateUserByPk(id, {
+                ...other,
+                uin,
+                openid,
+                aegisid
+            });
             if (!result) {
                 return res.status(500).json({
                     ret: 1007,
@@ -175,10 +210,31 @@ module.exports = {
                 });
             }
 
-            syncAndResponse();
+            syncAndResponse(res);
         } catch (error) {
             responseError(res, error, '更新白名单用户失败');
             logger.error('Update whitelist users fail! payload: %o, error: %o', payload, error);
+        }
+    },
+
+    async getAegisList(payload, req, res) {
+        const { offset = 0, limit = 20, id } = payload;
+        try {
+            const findResults = await whitelistService.getAegisList({
+                where: {
+                    id
+                },
+                offset: parseInt(offset),
+                limit: parseInt(limit)
+            });
+            const pickResults = findResults.rows.map(item => item.dataValues);
+            res.json({
+                ret: 0,
+                result: pickResults
+            });
+        } catch (error) {
+            responseError(res, error, '查找项目列表失败');
+            logger.error('Get project list fail! payload: %o, error: %o', payload, error);
         }
     }
 };
