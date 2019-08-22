@@ -157,6 +157,7 @@ var StatisticsAction = {
 
     async getTopError(param, req, res) {
         try {
+            const statisticsService = new StatisticsService();
             const { user }  = req.session;
             const isAdmin = user.role === 1;
             const { loginName } = user;
