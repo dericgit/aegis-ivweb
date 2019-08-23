@@ -8,6 +8,9 @@ var BusinessService = require('../../service/BusinessService'),
 var log4js = require('log4js'),
     logger = log4js.getLogger();
 
+// 匹配 2019-08-02
+const DATE_REG = /^(?:(?!0000)[0-9]{4}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$/;
+
 var StatisticsAction = {
 
     index: function (param, req, res) {
@@ -156,6 +159,13 @@ var StatisticsAction = {
 
     getTopError(param, req, res) {
         logger.info('查询错误列表' + JSON.stringify(param));
+        const { startDate, userName } = param;
+        if (!DATE_REG.test(startDate) || !/^[A-Za-z_]{3,20}$/.test(userName)) {
+            return res.json({
+                ret: -1,
+                msg: 'params error'
+            });
+        }
         const statisticsService = new StatisticsService();
         const { user } = req.session;
         logger.info(user);
@@ -163,13 +173,16 @@ var StatisticsAction = {
         const { loginName } = user;
         let searchName = loginName;
         if (isAdmin) {
-            loginName = param.userName || loginName
+            loginName = userName || loginName
         }
-        const startDate = param.startDate;
-        statisticsService.getTopError({ searchName, startDate }, function (data) {
+
+        statisticsService.getTopError({
+            searchName,
+            startDate
+        }, function (data) {
             res.json({
                 ret: 0,
-                data: result
+                data
             });
         });
     },
