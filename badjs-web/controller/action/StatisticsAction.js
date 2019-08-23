@@ -157,7 +157,7 @@ var StatisticsAction = {
         });
     },
 
-    getTopError(param, req, res) {
+    getTopError: function (param, req, res) {
         logger.info('查询错误列表' + JSON.stringify(param));
         const { startDate, userName } = param;
         if (!DATE_REG.test(startDate) || !/^[A-Za-z_]{3,20}$/.test(userName)) {
@@ -173,7 +173,7 @@ var StatisticsAction = {
         const { loginName } = user;
         let searchName = loginName;
         if (isAdmin) {
-            loginName = userName || loginName
+            searchName = userName || loginName
         }
 
         statisticsService.getTopError({
