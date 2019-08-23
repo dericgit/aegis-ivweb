@@ -256,18 +256,17 @@ StatisticsService.prototype = {
 
     },
 
-    async getTopError(param) {
+    getTopError: function(param, callback) {
         const sql = `select s.projectId, t.name, s.content, s.total from b_statistics s inner join b_apply t
-        where startDate = '${param.date} 00:00:00' and total >0 and s.projectId = t.id and projectId in (
+        where startDate = '${param.startDate} 00:00:00' and total >0 and s.projectId = t.id and projectId in (
            select a.id from b_apply a inner join b_user_apply b where a.id = b.applyid and b.loginName = '${param.searchName}' 
            and a.online =2 and a.status =1) order by s.total desc`;
         console.log(sql);
         global.models.db.driver.execQuery(sql, (err, data = []) => {
             if (!err) {
-                console.log(data);
-                return data;
+                callback(data);
             } else {
-                return [];
+                callback([]);
             }
         });
 

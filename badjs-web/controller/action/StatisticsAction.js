@@ -10,7 +10,6 @@ var log4js = require('log4js'),
 
 var StatisticsAction = {
 
-
     index: function (param, req, res) {
         var params = req.query,
             user = req.session.user;
@@ -155,35 +154,24 @@ var StatisticsAction = {
         });
     },
 
-    async getTopError(param, req, res) {
-        try {
-            const statisticsService = new StatisticsService();
-            const { user }  = req.session;
-            const isAdmin = user.role === 1;
-            const { loginName } = user;
-            let searchName = loginName;
-            if (isAdmin) {
-                loginName = param.userName || loginName
-            }
-            const startDate = param.startDate;
-            const result = await statisticsService.getTopError({searchName, startDate});
-            if (!result) {
-                return res.status(500).json({
-                    ret: 1007,
-                    msg: '获取错误日志列表失败'
-                });
-            }
-
+    getTopError(param, req, res) {
+        logger.info('查询错误列表' + JSON.stringify(param));
+        const statisticsService = new StatisticsService();
+        const { user } = req.session;
+        logger.info(user);
+        const isAdmin = user.role === 1;
+        const { loginName } = user;
+        let searchName = loginName;
+        if (isAdmin) {
+            loginName = param.userName || loginName
+        }
+        const startDate = param.startDate;
+        statisticsService.getTopError({ searchName, startDate }, function (data) {
             res.json({
                 ret: 0,
                 data: result
             });
-        } catch (error) {
-            return res.status(500).json({
-                ret: 1007,
-                msg: '获取错误失败'
-            });
-        }
+        });
     },
 
     getpvbyid: function (param, req, res) {
