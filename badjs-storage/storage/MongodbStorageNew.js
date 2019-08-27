@@ -5,7 +5,7 @@ const monitor = require('../service/monitor');
 const map = require('map-stream');
 const realTotal = require('../service/realTotalMaster');
 
-const connection = mongoose.createConnection(global.MONGODB.url, {
+const connection = mongoose.createConnection(global.MONGODB.url1, {
     auth: {
         authSource: 'admin'
     },
@@ -58,10 +58,10 @@ const insertDocuments = function (id, data) {
     const collectionName = 'aegislog_' + id;
     const model = initModel(collectionName);
     try {
-        model.insert(data);
+        model.create(data);
     } catch (e) {
         monitor(34471884); // [ivweb-aegis] mongodb插入失败
-        logger.warn('badjs-storage insert documents err' + err);
+        logger.warn('badjs-storage insert documents err' + e);
     }
 };
 
@@ -81,11 +81,6 @@ module.exports = function () {
 
         if (!data.id) {
             logger.info('not id data');
-            return;
-        }
-
-        if (!mongoDB) {
-            logger.info('cannot connect mongodb');
             return;
         }
         const id = data.id;
