@@ -5,7 +5,6 @@ const logger = require('log4js').getLogger();
 const request = require('request-promise-native');
 const WhitelistModel = require('../model/Whitelist');
 const ApplyList = require('../model/ApplyList');
-const whitelistSequelize = require('../config/sequelize').whiteList;
 
 moment.prototype.toMySqlDateTime = function() {
     return this.format('YYYY-MM-DD HH:mm:ss');

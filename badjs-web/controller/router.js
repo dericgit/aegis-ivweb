@@ -18,6 +18,7 @@ const ApiRouter = require('./api');
 const StaticServe = require('./static-serve');
 const upload = require('./sourcemap');
 const WhitelistAction = require('./action/WhitelistAction');
+const UserManage = require('./action/UserManage');
 const SpeedRouter = require('./speed/index');
 
 const pjConfig = require('../project.json');
@@ -98,6 +99,20 @@ module.exports = function(app) {
             res.json({ ret: -2, msg: 'waiting for admin verify' });
             return;
         }
+
+        // 统一鉴权
+        const validateRole = (dealCb, ...otherParam) => {
+            const { role } = req.session.user;
+            const { role } = { role: 0 }
+            if (role !== ROLE.ADMIN) {
+                return res.status(200).json({
+                    ret: 1003,
+                    msg: '权限不足'
+                });
+            }
+            return dealCb(...otherParam);
+        }
+
         //根据不同actionName 调用不同action
         try {
             switch (action) {
@@ -122,18 +137,11 @@ module.exports = function(app) {
                 case 'sourcemap':
                     SourceMapAction[operation](params, req, res);
                     break;
-                case 'whitelist':
-                    // 统一做层鉴权控制
-                    (() => {
-                        const { role } = req.session.user;
-                        if (role !== ROLE.ADMIN) {
-                            return res.status(200).json({
-                                ret: 1003,
-                                msg: '权限不足'
-                            });
-                        }
-                        WhitelistAction[operation](params, req, res);
-                    })();
+                case 'usermanage': // 用户管理
+                    validateRole(UserManage[operation], params, req, res);
+                    break;
+                case 'whitelist': // 白名单管理
+                    validateRole(WhitelistAction[operation], params, req, res);
                     break;
                 default:
                     next();
