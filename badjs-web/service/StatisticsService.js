@@ -35,6 +35,7 @@ var StatisticsService = function () {
 
     this.statisticsDao = global.models.statisticsDao;
     this.applyDao = global.models.applyDao;
+    this.userApplyDao = global.models.userApplyDao;
     this.pvDao = global.models.pvDao;
     this.scoreDao = global.models.scoreDao;
 
@@ -109,7 +110,7 @@ StatisticsService.prototype = {
                 });
             }).where(function () {
 
-        });
+            });
     },
     queryScoreById: function (param, callback) {
         var id = param.id;
@@ -252,6 +253,23 @@ StatisticsService.prototype = {
         };
 
         startTimeout();
+
+    },
+
+    getTopError: function (param, callback) {
+        logger.info(param);
+        const sql = `select s.projectId, t.name, s.content, s.total from b_statistics s inner join b_apply t
+        where startDate = '${param.startDate} 00:00:00' and total >0 and s.projectId = t.id and projectId in (
+           select a.id from b_apply a inner join b_user_apply b where a.id = b.applyid and b.loginName = '${param.searchName}' 
+           and a.online =2 and a.status =1) order by s.total desc`;
+        logger.info(sql);
+        global.models.db.driver.execQuery(sql, (err, data = []) => {
+            if (!err) {
+                callback(data);
+            } else {
+                callback([]);
+            }
+        });
 
     }
 };

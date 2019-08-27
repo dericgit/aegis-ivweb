@@ -18,12 +18,13 @@ orm.connect(mysqlUrl, function (err, db) {
         applyDao: require('../dao/ApplyDao')(db),
         approveDao: require('../dao/ApproveDao')(db),
         statisticsDao: require('../dao/StatisticsDao')(db),
+        userApplyDao: require('../dao/UserApplyDao')(db),
         db: db
     }
 
     var bs = new BusinessService();
 
-    bs.findBusinessByUser("chriscai", function (err, data) {
+    bs.findBusinessByUser("tickli", function (err, data) {
         console.log(data)
     })
 

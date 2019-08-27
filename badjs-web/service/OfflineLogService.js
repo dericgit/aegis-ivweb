@@ -23,7 +23,7 @@ try {
     logger.error('offline_log_monitor.db error ', e);
     fs.writeFile(offlineLogMonitorPath, fs.readFileSync(path.join(__dirname, 'offline_log_monitor.db')), function (err) {
         if (err) {
-            logger.error('make file offline_log_monitor.db error ', err);
+            logger.error('make file offline_log_monitor.db error ');
         } else {
             logger.log('make file offline_log_monitor.db success');
         }

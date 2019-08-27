@@ -6,7 +6,7 @@ let lastSend = 0;
 
 const send = function () {
     lastSend = +new Date();
-    http.get(`http://mp.now.qq.com/report/report_vm?monitors=[${pool.join(',')}]&_=${Math.random()}`, function () {});
+    http.get(`http://aegis.qq.com/monitor?monitors=[${pool.join(',')}]&_=${Math.random()}`, function () {});
     pool = [];
 };
 

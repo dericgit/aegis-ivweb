@@ -197,13 +197,15 @@ CREATE TABLE `b_hardware` (
 DROP TABLE IF EXISTS `b_whitelist`;
 
 CREATE TABLE `b_whitelist` (
-  `uin` varchar(20) NOT NULL DEFAULT '',
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uin` varchar(20) DEFAULT '',
+  `openid` varchar(64) DEFAULT '' COMMENT 'uin改造，最终方案会使用openid来标示用户',
   `uid` varchar(20) DEFAULT NULL,
-  `guid` varchar(64) DEFAULT NULL COMMENT '设备号',
+  `aid` varchar(64) DEFAULT NULL COMMENT 'AEGIS为每个用户生成的ID',
   `remark` varchar(64) DEFAULT NULL COMMENT '备注',
   `operator` varchar(64) NOT NULL DEFAULT '' COMMENT '操作人',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `aegisid` varchar(20) DEFAULT '0',
-  PRIMARY KEY (`uin`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
