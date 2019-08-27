@@ -20,6 +20,10 @@ router.get('/:id/:type', (req, res) => {
             model = models.Fetch;
             break;
         }
+        case 'performance': {
+            model = models.Performance;
+            break;
+        }
         default: {
             res.json(403, {
                 ret: 2000,
