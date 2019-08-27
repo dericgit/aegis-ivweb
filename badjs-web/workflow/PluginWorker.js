@@ -12,12 +12,8 @@ const pluginPath = path.resolve(__dirname, '../plugin');
 const dirs = fs.readdirSync(pluginPath);
 logger.info('init plugin ...');
 
-const apiType = ['route'];
-
 // 插件的信息
 const list = [];
-let plugins = [];
-let pluginObj;
 
 dirs.forEach(item => {
     var pluginObj = require(`${pluginPath}/${item}/index.js`);
@@ -51,7 +47,6 @@ function getList() {
 
 // 请求合法行校验
 function checkReq(req, res, next) {
-
     var ffname = req.cookies._ffname,
         md5str = crypto.createHash("md5").update(req.query.applyName + req.query.userName + 'feflow', 'utf8').digest('hex');
     logger.info(`req _ffname: ${ffname}, server md5str: ${md5str}`);
@@ -60,14 +55,13 @@ function checkReq(req, res, next) {
         next();
     } else {
         logger.info('sign not match');
-        res.json({recode: 3, msg: 'ill request.'});
+        res.json({ retcode: 3, msg: 'ill request.' });
     }
 }
 
 // 路由服务调用
 function registerRoute(app) {
     app.use('/plugin', checkReq);
-
     list.forEach(item => {
         if (item.type == 'route') {
             app.use('/plugin/' + item.path, item.handle);

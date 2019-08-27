@@ -1,12 +1,13 @@
 'use strict';
 const Promise = require('bluebird');
 
-const userService = require('../UserService.js'),
-    crypto = require('crypto'),
-    logger = require('log4js').getLogger(),
-    ApplyService = require('../ApplyService.js');
+const userService = require('../UserService.js');
+const crypto = require('crypto');
+const logger = require('log4js').getLogger();
+const ApplyService = require('../ApplyService.js');
+const WhitelistService = require('../WhitelistService');
 
-function _getUserByName (name) {
+function _getUserByName(name) {
 
     const db = global.models.db;
 
@@ -45,16 +46,13 @@ function _getUserByName (name) {
 }
 
 
-function getUser (name) {
+function getUser(name) {
     return _getUserByName(name);
 }
 
-function _addApply (apply) {
-
+function _addApply(apply) {
     return new Promise((resolve, reject) => {
-
         new ApplyService().add(apply, (err, item) => {
-
             if (err) {
 
                 reject({ retcode: 1, msg: err });
@@ -68,7 +66,7 @@ function _addApply (apply) {
 /**
  * applyObj
  */
-function registApply (applyObj) {
+function registApply(applyObj) {
 
     if (!applyObj.applyName || !applyObj.url) {
         return Promise.reject({ retcode: 2, msg: 'params error. ' });
@@ -98,7 +96,28 @@ function registApply (applyObj) {
     });
 }
 
+async function registAddWhitelist(whiteUser) {
+    return await WhitelistService.addBulkUser(users);
+}
+
+async function registListWhitelist(aegis_id) {
+    const data = await WhitelistService.findBatchUsers({
+        where: {
+            aegisid: aegis_id
+        },
+        limit: 2000
+    });
+    return data;
+}
+
+async function registDeleteWhitelist (where) {
+    return await WhitelistService.deleteUsersByConditions(where)
+}
+
 module.exports = {
     getUser,
-    registApply
+    registApply,
+    registAddWhitelist,
+    registListWhitelist,
+    registDeleteWhitelist
 };

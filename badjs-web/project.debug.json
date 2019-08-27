@@ -51,7 +51,7 @@
         "time": "09:00:00",
         "top": 20
     },
-    "ping": [17, 182],
+    "ping": [],
     "errorMailTo": "xx@yy.com",
     "ownerMailTo": "xx@yy.com,a@b.com",
     "scoreMailTo": "a@b.com,c@b.com"

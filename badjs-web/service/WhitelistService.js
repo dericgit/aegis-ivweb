@@ -57,6 +57,18 @@ module.exports = {
     },
 
     /**
+     * 批量添加白名单用户
+     * @param {array} users 
+     */
+    async addBulkUser(users) {
+        const [user, isCreated] = await WhitelistModel.bulkCreate(users);
+        if (isCreated) {
+            logger.info(`Insert whitelist users success`);
+        }
+        return [user, isCreated];
+    },
+
+    /**
      * 删除白名单用户
      * @param {number} id
      * @returns {Promise<number>} - 删除成功的记录数
@@ -64,6 +76,20 @@ module.exports = {
     async deleteUser(id) {
         const deletedRows = await WhitelistModel.destroy({
             where: { id }
+        });
+        if (deletedRows > 0) {
+            logger.info(`Delete whitelist user [${id}] successfully.`);
+        }
+        return deletedRows;
+    },
+
+    /**
+     * 按照条件删除白名单用户
+     * @param {*} where 
+     */
+    async deleteUsersByConditions(where) {
+        const deletedRows = await WhitelistModel.destroy({
+            where
         });
         if (deletedRows > 0) {
             logger.info(`Delete whitelist user [${id}] successfully.`);
