@@ -5,12 +5,13 @@ const monitor = require('../service/monitor');
 const map = require('map-stream');
 const realTotal = require('../service/realTotalMaster');
 
-mongoose.connect(global.MONGODB.url, {
+const connection = mongoose.createConnection(global.MONGODB.url, {
+    auth: {
+        authSource: 'admin'
+    },
     useCreateIndex: true,
     useNewUrlParser: true
 });
-
-const connection = mongoose.connection;
 
 // 每个 collection 最大一千万条数据，占有空间最大 20G
 const LogSchema = new mongoose.Schema({
@@ -46,9 +47,9 @@ connection.once('open', function () {
 
 const modelMap = {};
 
-function initModel (collectionName) {
+function initModel(collectionName) {
     if (!modelMap[collectionName]) {
-        modelMap[collectionName] =  mongoose.model(collectionName, LogSchema);
+        modelMap[collectionName] = mongoose.model(collectionName, LogSchema);
     }
     return modelMap[collectionName];
 }
