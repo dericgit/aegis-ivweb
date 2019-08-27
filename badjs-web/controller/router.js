@@ -103,7 +103,6 @@ module.exports = function(app) {
         // 统一鉴权
         const validateRole = (dealCb, ...otherParam) => {
             const { role } = req.session.user;
-            const { role } = { role: 0 }
             if (role !== ROLE.ADMIN) {
                 return res.status(200).json({
                     ret: 1003,
