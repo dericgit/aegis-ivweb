@@ -20,7 +20,7 @@ try {
     global.offlineLogMonitorInfo = JSON.parse(fs.readFileSync(offlineLogMonitorPath).toString());
     logger.info('offline_log_monitor.db success ');
 } catch (e) {
-    logger.error('offline_log_monitor.db error ', e);
+    logger.error('offline_log_monitor.db error: path is not exists');
     fs.writeFile(offlineLogMonitorPath, fs.readFileSync(path.join(__dirname, 'offline_log_monitor.db')), function (err) {
         if (err) {
             logger.error('make file offline_log_monitor.db error ');

@@ -36,6 +36,7 @@ module.exports = function () {
                 const startDate = endDate - INTERVAL * 60 * 1000;
 
                 logService.query({ id, startDate, endDate, 'level[]': 2, _t: +new Date() }, function (err, items) {
+                    if (err) return;
                     console.log(`${formatDate(new Date())} ping 检测, id: ${id}, 检测插入数据${items.length}条`);
                     if (!items.length) {
                         userService.queryMailByApplyId(id, function (err, data) {
