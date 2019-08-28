@@ -96,7 +96,7 @@ function registApply(applyObj) {
     });
 }
 
-async function registAddWhitelist(whiteUser) {
+async function registAddWhitelist(users) {
     return await WhitelistService.addBulkUser(users);
 }
 
@@ -105,6 +105,7 @@ async function registListWhitelist(aegis_id) {
         where: {
             aegisid: aegis_id
         },
+        order: [['id', 'DESC']],
         limit: 2000
     });
     return data;

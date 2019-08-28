@@ -32,7 +32,7 @@ async function addWhitelist(req, res, next) {
                 operator: creator,
                 uin: w.uin,
                 openid: w.open_id,
-                remark: w.username
+                remark: w.remark
             }
         });
         if (aegis_id && whiteUsers.length) {
@@ -75,14 +75,12 @@ async function listWhitelis(req, res, next) {
  * @param {*} next 
  */
 async function deleteWhitelis(req, res, next) {
-    const { aegis_id, uin, open_id } = req.query;
+    const { aegis_id, uin, openid = '' } = req.query;
     try {
         const where = {
             aegisid: aegis_id,
-            $or: {
-                uin: { $eq: uin },
-                openid: { $eq: open_id }
-            }
+            uin,
+            // $or: [{ 'uin': uin }, { 'openid': openid }]
         }
         const data = await api.registDeleteWhitelist(where);
         res.json({

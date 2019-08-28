@@ -243,6 +243,7 @@ function checkWhitelist(req, res) {
     let params = req.params;
     const id = params.id - 0;
     const uin = params.uin;
+    const projectOnly = params.projectOnly; // 只检测当前项目是否白名单
 
     if (!id || !uin || !global.whitelist || Object.keys(global.whitelist).length === 0) {
         responseHeader['Content-length'] = 0;
@@ -257,7 +258,7 @@ function checkWhitelist(req, res) {
     }
 
     let is_in_white_list = false;
-    if (global.whitelist[0]) {
+    if (!projectOnly && global.whitelist[0]) {
         is_in_white_list = !!global.whitelist[0][uin]; 
     }
     if (!is_in_white_list && global.whitelist[id]) {
@@ -391,6 +392,7 @@ app.use('/badjs/offlineLog', function(req, res) {
     })
     /* --------------------------------- 是否白名单用户 -------------------------------- */
     .use('/aegis/:id/:uin', checkWhitelist)
+    .use('/aegis', checkWhitelist)
     /* ---------------------------------- 日志上报 ---------------------------------- */
     .use('/badjs', function(req, res) {
         let param = req.query || {};

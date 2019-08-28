@@ -6,7 +6,7 @@ const request = require('request-promise-native');
 const WhitelistModel = require('../model/Whitelist');
 const ApplyList = require('../model/ApplyList');
 
-moment.prototype.toMySqlDateTime = function() {
+moment.prototype.toMySqlDateTime = function () {
     return this.format('YYYY-MM-DD HH:mm:ss');
 };
 
@@ -87,9 +87,7 @@ module.exports = {
      * @param {*} where 
      */
     async deleteUsersByConditions(where) {
-        const deletedRows = await WhitelistModel.destroy({
-            where
-        });
+        const deletedRows = await WhitelistModel.destroy({ 'where': where });
         if (deletedRows > 0) {
             logger.info(`Delete whitelist user [${id}] successfully.`);
         }
@@ -115,7 +113,7 @@ module.exports = {
             if (!p[c.aegisid]) {
                 p[c.aegisid] = {};
             }
-            p[c.aegisid][c.uin] = 1; 
+            p[c.aegisid][c.uin] = 1;
             return p;
         }, {});
         const options = {
