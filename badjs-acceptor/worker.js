@@ -240,7 +240,7 @@ function checkReportID(id, req) {
 }
 
 function checkWhitelist(req, res) {
-    let params = req.params;
+    let params = req.query;
     const id = params.id - 0;
     const uin = params.uin;
     const projectOnly = params.projectOnly; // 只检测当前项目是否白名单
@@ -391,8 +391,7 @@ app.use('/badjs/offlineLog', function(req, res) {
         });
     })
     /* --------------------------------- 是否白名单用户 -------------------------------- */
-    .use('/aegis/:id/:uin', checkWhitelist)
-    .use('/aegis', checkWhitelist)
+    .use('/aegis/whitelist', checkWhitelist)
     /* ---------------------------------- 日志上报 ---------------------------------- */
     .use('/badjs', function(req, res) {
         let param = req.query || {};
