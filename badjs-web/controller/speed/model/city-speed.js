@@ -2,7 +2,7 @@
 
 module.exports = (sequelize, DataTypes) => {
     const CitySpeed = sequelize.define('CitySpeed', {
-        project_id: {
+        aegis_id: {
             type: DataTypes.INTEGER,
             primaryKey: true
         },
