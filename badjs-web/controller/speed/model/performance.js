@@ -39,12 +39,22 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.FLOAT,
             allowNull: false
         },
+        times: {
+            type: Sequelize.INTEGER,
+            allowNull: false
+        },
         create_time: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW
         }
     }, {
-            timestamps: false
+            timestamps: false,
+            indexes: [
+                {
+                    unique: false,
+                    fields: ['create_time']
+                }
+            ]
         }
     );
     return Performance;
