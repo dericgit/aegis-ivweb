@@ -74,7 +74,7 @@ function registApply(applyObj) {
 
     var apply = {
         userName: applyObj.userName,
-        status: 0,
+        status: applyObj.applyStatus || 0,
         name: applyObj.applyName,
         appkey: crypto.createHash("md5").update(new Date - 0 + "badjsappkey" + applyObj.userName).digest('hex'),
         url: applyObj.url,

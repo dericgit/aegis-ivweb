@@ -1,6 +1,5 @@
 // 为 fastest 注册路由和处理请求函数
 
-const path = require('path');
 const api = require(global.apiPath);
 
 /**
@@ -9,6 +8,8 @@ const api = require(global.apiPath);
  * @param {*} res 
  */
 async function createProject(req, res) {
+    const appyObj = req.query;
+    appyObj.applyStatus = 1;
     api.registApply(req.query).then(data => {
         res.json(data);
     }).catch(e => {
