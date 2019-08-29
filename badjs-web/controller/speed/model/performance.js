@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         times: {
-            type: Sequelize.INTEGER,
+            type: DataTypes.INTEGER,
             allowNull: false
         },
         create_time: {
