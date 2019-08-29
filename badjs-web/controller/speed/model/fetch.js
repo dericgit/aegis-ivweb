@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(3000),
             allowNull: false
         },
+        times: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         avg_time: {
             type: DataTypes.FLOAT,
             allowNull: false
@@ -24,7 +28,13 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: DataTypes.NOW
         }
     }, {
-            timestamps: false
+            timestamps: false,
+            indexes: [
+                {
+                    unique: false,
+                    fields: ['create_time']
+                }
+            ]
         }
     );
     return Fetch;

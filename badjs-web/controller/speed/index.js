@@ -118,7 +118,7 @@ router.get('/:id/:type/city-speed', (req, res) => {
     models.CitySpeed.findOne({
         where: {
             type,
-            project_id: id,
+            aegis_id: id,
             create_time: {
                 [Op.between]: [lastDay.toDate(), thisDay.toDate()]
             }

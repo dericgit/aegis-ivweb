@@ -18,9 +18,27 @@ module.exports = (sequelize, DataTypes) => {
         create_time: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW
+        },
+        city_speed: {
+            type: DataTypes.TEXT,
+            allowNull: false
+        },
+        city_status: {
+            type: DataTypes.TEXT,
+            allowNull: false
+        },
+        times: {
+            type: DataTypes.INTEGER,
+            allowNull: false
         }
     }, {
-            timestamps: false
+            timestamps: false,
+            indexes: [
+                {
+                    unique: false,
+                    fields: ['create_time']
+                }
+            ]
         }
     );
     return Static;
