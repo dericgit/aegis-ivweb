@@ -245,6 +245,11 @@ function checkWhitelist(req, res) {
     const uin = params.uin;
     const projectOnly = params.projectOnly; // 只检测当前项目是否白名单
 
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Content-Length, Authorization, Accept,X-Requested-With');
+    res.header('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS');
+    if (req.method == 'OPTIONS') return res.send(200);
+
     if (!id || !uin || !global.whitelist || Object.keys(global.whitelist).length === 0) {
         responseHeader['Content-length'] = 0;
         res.writeHead(204, responseHeader);
