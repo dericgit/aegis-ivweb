@@ -41,22 +41,15 @@ module.exports = {
     // 查找列表
     async getList(payload, req, res) {
         const where = assembleWhere(payload);
-        const { offset = '0', limit = '10', chineseName, loginName } = payload;
+        let { offset = '0', limit = '10', chineseName, loginName } = payload;
+        if (chineseName || loginName) offset = '0';
 
         try {
-            let condition;
-            if (chineseName || loginName) {
-                condition = {
-                    where
-                }
-            } else {
-                condition = {
-                    where,
-                    offset: parseInt(offset),
-                    limit: parseInt(limit)
-                }
-            }
-            const findResults = await userManageService.getList(where);
+            const findResults = await userManageService.getList({
+                where,
+                offset: parseInt(offset),
+                limit: parseInt(limit)
+            });
             const pickResults = findResults.rows.map(item => item.dataValues);
             res.json({
                 ret: 0,
