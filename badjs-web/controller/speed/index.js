@@ -124,7 +124,7 @@ router.get('/:id/:type/city-speed', (req, res) => {
             }
         }
     }).then(data => {
-        let citySpeed = {}, cityStatus = {};
+        let citySpeed = {}, cityStatus = {}, cityDistribution = {};
         if (data) {
             citySpeed = JSON.parse(data.city_speed);
             cityStatus = JSON.parse(data.city_status);
