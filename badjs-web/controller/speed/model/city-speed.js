@@ -23,7 +23,11 @@ module.exports = (sequelize, DataTypes) => {
         city_status: {
             type: DataTypes.TEXT,
             allowNull: false
-        }
+        },
+        city_distribution: {
+            type: DataTypes.TEXT,
+            allowNull: false
+        },
     }, {
         timestamps: false
     });
