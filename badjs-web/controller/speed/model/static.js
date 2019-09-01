@@ -27,6 +27,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.TEXT,
             allowNull: false
         },
+        city_distribution: {
+            type: DataTypes.TEXT,
+            allowNull: false
+        },
         times: {
             type: DataTypes.INTEGER,
             allowNull: false
