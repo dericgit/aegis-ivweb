@@ -14,8 +14,6 @@ var ApproveService = function () {
 
 ApproveService.prototype = {
     query: function (target, callback) {
-
-
         //管理员
         if (target.user.role == 1) {
             this.approveDao.all({}, function (err, items) {
@@ -83,6 +81,8 @@ ApproveService.prototype = {
         this.applyDao.one({
             id: target.id
         }, function (err, apply) {
+            if (!apply) return callback(new Error('project is not exists'));
+            console.log(apply, target);
             // SQL: "SELECT * FROM b_apply WHERE name = 'xxxx'"
             for (var key in target) {
                 apply[key] = target[key];

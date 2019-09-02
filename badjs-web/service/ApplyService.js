@@ -147,7 +147,6 @@ ApplyService.prototype = {
         this.applyDao.one({
             id: target.id
         }, function (err, apply) {
-
             callback(err, apply);
         });
     }

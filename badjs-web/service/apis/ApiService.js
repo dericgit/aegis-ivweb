@@ -1,10 +1,10 @@
 'use strict';
 const Promise = require('bluebird');
 
-const userService = require('../UserService.js');
 const crypto = require('crypto');
 const logger = require('log4js').getLogger();
 const ApplyService = require('../ApplyService.js');
+const LogService = require('../LogService');
 const WhitelistService = require('../WhitelistService');
 
 function _getUserByName(name) {
@@ -50,13 +50,18 @@ function getUser(name) {
     return _getUserByName(name);
 }
 
+function syncProjectInfos() {
+    const logService = new LogService();
+    logService.pushProject();
+}
+
 function _addApply(apply) {
     return new Promise((resolve, reject) => {
         new ApplyService().add(apply, (err, item) => {
             if (err) {
-
                 reject({ retcode: 1, msg: err });
             } else {
+                syncProjectInfos();
                 resolve({ retcode: 0, badjsId: item.applyId });
             }
         });
@@ -67,7 +72,6 @@ function _addApply(apply) {
  * applyObj
  */
 function registApply(applyObj) {
-
     if (!applyObj.applyName || !applyObj.url) {
         return Promise.reject({ retcode: 2, msg: 'params error. ' });
     }
@@ -96,28 +100,60 @@ function registApply(applyObj) {
     });
 }
 
+async function registProjectStatusUpdate({ aegis_id, status }) {
+    return new Promise((resolve, reject) => {
+        return new ApplyService().update({ id: aegis_id, status }, (err, item) => {
+            if (err) {
+                reject({ retcode: 1, msg: err });
+            } else {
+                syncProjectInfos();
+                resolve({ retcode: 0, aegis_id });
+            }
+        });
+    });
+}
+
+
 async function registAddWhitelist(users) {
-    return await WhitelistService.addBulkUser(users);
+    try {
+        const data = await WhitelistService.addBulkUser(users);
+        syncProjectInfos();
+        return data;
+    } catch (e) {
+        throw e;
+    }
 }
 
 async function registListWhitelist(aegis_id) {
-    const data = await WhitelistService.findBatchUsers({
-        where: {
-            aegisid: aegis_id
-        },
-        order: [['id', 'DESC']],
-        limit: 2000
-    });
-    return data;
+    new ApplyService().queryById({ id: aegis_id }, async (err, item) => {
+        if (!err && item) {
+            const data = await WhitelistService.findBatchUsers({
+                where: {
+                    aegisid: aegis_id
+                },
+                order: [['id', 'DESC']],
+                limit: 2000
+            });
+            return Object.assign(data, { status: item.status });
+        }
+    })
+
 }
 
-async function registDeleteWhitelist (where) {
-    return await WhitelistService.deleteUsersByConditions(where)
+async function registDeleteWhitelist(where) {
+    try {
+        const res = await WhitelistService.deleteUsersByConditions(where);
+        syncProjectInfos();
+        return res;
+    } catch (e) {
+        throw e;
+    }
 }
 
 module.exports = {
     getUser,
     registApply,
+    registProjectStatusUpdate,
     registAddWhitelist,
     registListWhitelist,
     registDeleteWhitelist

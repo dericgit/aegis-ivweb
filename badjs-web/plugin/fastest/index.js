@@ -94,6 +94,24 @@ async function deleteWhitelis(req, res, next) {
 }
 
 
+/**
+ * 更新项目状态
+ * { aegis_id, status }
+ * 0 待审核
+ * 1 通过
+ * 2 拒绝
+ * @param {*} param
+ */
+async function changeProjectStatus(req, res, next) {
+    const { aegis_id, status } = req.query;
+    console.log(aegis_id, status);
+    return api.registProjectStatusUpdate({ aegis_id, status }).then(data => {
+        res.json(data);
+    }).catch(e => {
+        res.json(e);
+    });
+}
+
 module.exports = {
     route: [{
         path: 'fastest/createProject',
@@ -107,6 +125,9 @@ module.exports = {
     }, {
         path: 'fastest/delete',
         handle: deleteWhitelis
+    }, {
+        path: 'fastest/changeProjectStatus',
+        handle: changeProjectStatus
     }]
 };
 
