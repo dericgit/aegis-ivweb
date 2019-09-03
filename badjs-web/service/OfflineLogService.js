@@ -23,7 +23,7 @@ try {
     logger.error('offline_log_monitor.db error: path is not exists');
     fs.writeFile(offlineLogMonitorPath, fs.readFileSync(path.join(__dirname, 'offline_log_monitor.db')), function (err) {
         if (err) {
-            logger.error('make file offline_log_monitor.db error ');
+            logger.error('make file offline_log_monitor.db error.');
         } else {
             logger.log('make file offline_log_monitor.db success');
         }
@@ -31,7 +31,11 @@ try {
 }
 
 setInterval(function () {
-    fs.writeFileSync(offlineLogMonitorPath, JSON.stringify(global.offlineLogMonitorInfo));
+    fs.writeFileSync(offlineLogMonitorPath, JSON.stringify(global.offlineLogMonitorInfo), function (err) {
+        if (err) {
+            logger.error('make file offline_log_monitor.db error.')
+        }
+    });
 }, 3600000);
 
 app.use(bodyParser.urlencoded({ extended: false }));

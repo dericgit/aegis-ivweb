@@ -58,15 +58,12 @@ async function addWhitelist(req, res, next) {
  */
 async function listWhitelis(req, res, next) {
     const { aegis_id } = req.query;
-    try {
-        const data = await api.registListWhitelist(aegis_id);
-        res.json({
+    api.registListWhitelist(aegis_id, data => {
+        return res.json({
             retcode: 0,
             data
         });
-    } catch (e) {
-        res.json(e);
-    }
+    });
 }
 
 /**

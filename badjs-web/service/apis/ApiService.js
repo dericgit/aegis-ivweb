@@ -124,7 +124,7 @@ async function registAddWhitelist(users) {
     }
 }
 
-async function registListWhitelist(aegis_id) {
+async function registListWhitelist(aegis_id, callback) {
     new ApplyService().queryById({ id: aegis_id }, async (err, item) => {
         if (!err && item) {
             const data = await WhitelistService.findBatchUsers({
@@ -134,7 +134,9 @@ async function registListWhitelist(aegis_id) {
                 order: [['id', 'DESC']],
                 limit: 2000
             });
-            return Object.assign(data, { status: item.status });
+            return callback(Object.assign(data, { status: item.status }));
+        } else {
+            callback();
         }
     })
 
