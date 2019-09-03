@@ -19,14 +19,13 @@ if (argv.indexOf('--project') >= 0) {
     global.pjconfig = require(path.join(__dirname, 'project.json'));
 }
 
-var mq = require(global.pjconfig.mq.module);
+var mq = require('axon');
 var dispatcher = mq.socket('pub');
 var acceptor = mq.socket('pull');
 var dispatcherPort = global.pjconfig.dispatcher.port;
 var dispatcherAddress = global.pjconfig.dispatcher.address;
 var acceptorPort = global.pjconfig.acceptor.port;
 var acceptorAddress = global.pjconfig.acceptor.address;
-
 
 acceptor[acceptor.bindSync ? 'bindSync' : 'bind']('tcp://' + acceptorAddress + ':' + acceptorPort);
 
