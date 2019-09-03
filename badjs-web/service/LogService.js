@@ -16,7 +16,6 @@ var request = require("request");
 var LogService = function () {
 
     this.queryUrl = global.pjconfig.storage.queryUrl;
-    this.pushProjectUrl = global.pjconfig.openapi.pushProjectUrl;
 
     // this.url = 'http://127.0.0.1:9000/query';
     logger.debug('query url : ' + this.queryUrl);
@@ -54,65 +53,8 @@ LogService.prototype = {
             callback(err);
         });
     },
-    pushProject: function (callback) {
-        var self = this;
-
-        callback || (callback = function () {
-        });
-
-        var businessService = new BusinessService();
-        var push = function () {
-            businessService.findBusiness(function (err, item) {
-                var projectsInfo = {};
-                _.each(item, function (value) {
-                    try {
-                        value.blacklist = JSON.parse(value.blacklist || {});
-                    } catch (e) {
-                        value.blacklist = {};
-                    }
-
-                    projectsInfo[value.id] = {
-                        id: value.id,
-                        url: value.url,
-                        blacklist: value.blacklist,
-                        appkey: value.appkey,
-                        user: value.loginName,
-                        name: value.name
-                    };
-                });
-
-                var result = [0, 0];
-
-                var resultCall = function () {
-                    if (result[0] < 0 && result[1] < 0) {
-                        callback(new Error("error"));
-                    } else if (result[0] > 0 && result[1] > 0) {
-                        callback();
-                    }
-                };
-
-                request.post(self.pushProjectUrl, {
-                    form: {
-                        projectsInfo: JSON.stringify(projectsInfo),
-                        auth: "badjsOpen"
-                    }
-                }, function (err) {
-                    if (err) {
-                        logger.warn('push projectIds to open  error :' + err);
-                        result[1] = -1;
-                    } else {
-                        logger.info('push projectIds to openapi success');
-                        result[1] = 1;
-                    }
-                    resultCall();
-                });
-
-            });
-            WhitelistService.postToAcceptor();
-        };
-
-        push();
-
+    pushProject: function () {
+        WhitelistService.postToAcceptor();
     }
 };
 

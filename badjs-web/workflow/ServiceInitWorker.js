@@ -7,20 +7,9 @@ module.exports = function () {
     setTimeout(function () {
         const LogService = require('../service/LogService');
         const logService = new LogService();
-        const pushProject = function () {
-            logService.pushProject(function (err) {
-                if (err) {
-                    logger.warn('push project on system start and error ');
-                } else {
-                    logger.info('push project on system start');
-                }
-            });
-        };
-
-        pushProject();
+        logService.pushProject();
 
         require('../service/OfflineLogService')();
-        // require('../service/PingService')();
         mkdirs(path.join(__dirname, '../static/img/tmp'), (str) => {
             console.log(str || 'mkdir success');
         });

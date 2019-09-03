@@ -30,9 +30,6 @@
     "acceptor": {
         "pushWhitelistUrl": "http://127.0.0.1:9001/syncWhitelist"
     },
-    "openapi": {
-        "pushProjectUrl" : "http://127.0.0.1:9002/getProjects"
-    },
     "sourcemap": "/data/sourcemap",
     "offline_log": "/data/offline_log",
     "secretKey": "as2123zfxgf_badjs_fff",

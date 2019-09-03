@@ -31,16 +31,7 @@ var approveAction = {
                 return;
             }
             if (params.applyStatus == 1 || params.applyStatus == 2) {
-                var pushProject = function () {
-                    logService.pushProject(function (err) {
-                        if (err) {
-                            logger.warn('push project  error ' + err);
-                        } else {
-                            logger.info('push project success from approve ');
-                        }
-                    });
-                };
-                pushProject();
+                logService.pushProject();
             }
 
             res.json({ ret: 0, msg: "审核完成" });
