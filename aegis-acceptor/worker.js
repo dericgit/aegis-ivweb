@@ -41,6 +41,7 @@ global.projectsInfo = {};
 // listen for projects and whitelist update from master
 process.on('message', function(data) {
     if (data.projectsInfo) {
+        logger.info('update project info');
         let info = data.projectsInfo;
         if (typeof info === 'object') {
             for (const k in info) {
@@ -51,6 +52,7 @@ process.on('message', function(data) {
         }
     }
     if (data.whitelist) {
+        logger.info('update whitelist info');
         global.whitelist = data.whitelist;
     }
 });
