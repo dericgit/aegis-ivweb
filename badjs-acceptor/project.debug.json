@@ -3,8 +3,10 @@
     "dispatcher": {
         "port": 10001,
         "address": "127.0.0.1",
-        "subscribe": "badjs",
-        "module": "./dispatcher/axon"
+        "subscribe": "badjs"
+    },
+    "mysql": {
+        "url": "mysql://root:root@localhost:3306/badjs"
     },
     "offline": {
         "path": "/data/offline_log",

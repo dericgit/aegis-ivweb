@@ -6,8 +6,6 @@
 var log4js = require('log4js'),
     logger = log4js.getLogger();
 
-var _ = require("underscore");
-
 module.exports = function () {
     return {
         process: function (data) {

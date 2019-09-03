@@ -1,19 +1,16 @@
-var log4js = require('log4js'),
-    logger = log4js.getLogger();
-
 
 // 黑名单配置
-var blacklistIP = global.pjconfig['blackList'] ? global.pjconfig['blackList'].ip : [];
-var blacklistUA = global.pjconfig['blackList'] ? global.pjconfig['blackList'].ua : [];
+const blacklistIP = global.pjconfig['blackList'] ? global.pjconfig['blackList'].ip : [];
+const blacklistUA = global.pjconfig['blackList'] ? global.pjconfig['blackList'].ua : [];
 
 // ip黑名单正则
-var blacklistIPRegExpList = [];
+const blacklistIPRegExpList = [];
 (blacklistIP || []).forEach(function (reg) {
     blacklistIPRegExpList.push(new RegExp('^' + reg.replace(/\./g, '\\.')));
 });
 
 // ua黑名单正则
-var blacklistUARegExpList = [];
+const blacklistUARegExpList = [];
 (blacklistUA || []).forEach(function (reg) {
     blacklistUARegExpList.push(new RegExp(reg, 'i'));
 });
@@ -25,7 +22,7 @@ var blacklistUARegExpList = [];
  * @return {boolean} 是否在黑名单里
  */
 function inBlacklist (ip, regExpList) {
-    for (var i = 0; i < regExpList.length; i++) {
+    for (let i = 0; i < regExpList.length; i++) {
         if (regExpList[i].test(ip)) {
             return true;
         }
@@ -40,10 +37,10 @@ function inBlacklist (ip, regExpList) {
 module.exports = function () {
     return {
         process: function (data) {
-            var arr = data.data;
-            for (var i = 0; i < arr.length; i++) {
-                var ip = arr[i].ip;
-                var ua = arr[i].userAgent;
+            const arr = data.data;
+            for (let i = 0; i < arr.length; i++) {
+                const ip = arr[i].ip;
+                const ua = arr[i].userAgent;
                 if (inBlacklist(ip, blacklistIPRegExpList)) {
                     console.log('ignore request ,  in Blacklist by Ip:' + ip);
                     data.req.throwError = 'global_blackList_ip';
@@ -54,21 +51,6 @@ module.exports = function () {
                     data.req.throwError = 'global_blackList_ua';
                     return false;
                 }
-
-                var pBlacklistIPRegExpList = global.projectsInfo[arr[i].id].blacklistIPRegExpList;
-                if (pBlacklistIPRegExpList && pBlacklistIPRegExpList.length && inBlacklist(ip, pBlacklistIPRegExpList)) {
-                    console.log('ignore request ,  in pBlacklist by Ip:' + ip);
-                    data.req.throwError = 'project_blackList_ip';
-                    return false;
-                }
-
-                var pBlacklistUARegExpList = global.projectsInfo[arr[i].id].blacklistUARegExpList;
-                if (pBlacklistUARegExpList && pBlacklistUARegExpList.length && inBlacklist(ua, pBlacklistUARegExpList)) {
-                    console.log('ignore request ,  in pBlacklist by ua:' + ua);
-                    data.req.throwError = 'project_blackList_ua';
-                    return false;
-                }
-
             }
         }
     };

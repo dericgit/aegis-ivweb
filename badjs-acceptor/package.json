@@ -12,9 +12,10 @@
     "express": "^4.16.4",
     "lodash": "^4.17.15",
     "log4js": "^4.1.0",
+    "mysql2": "^1.7.0",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
-    "underscore": "^1.9.1"
+    "sequelize": "^5.18.1"
   },
   "scripts": {
     "test": ""

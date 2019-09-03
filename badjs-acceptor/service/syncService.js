@@ -1,99 +1,78 @@
-/* global module */
 /**
- * Created by chriscai on 2015/1/23.
+ * 项目信息以及白名单信息同步操作
+ * 在项目初始化的时候会自动从DB里面读写相关信息，并且放在内存中
+ * 项目中如果有apply信息改变，或者白名单信息更新，会重新触发读取操作
  */
-
-/**
- * TODO: project.db 体积会随着项目的增加逐渐膨胀，每次项目更新后全量持久化到文件 I/O 时间会线性增长；并且每次启动后全量加载项目数据到内存比较粗暴；
- * 可以考虑做 redis 缓存
- */
-
-const fs = require('fs');
-const express = require('express');
-const bodyParser = require('body-parser');
 const log4js = require('log4js');
+const express = require('express');
+const Sequelize = require('sequelize');
 const logger = log4js.getLogger();
 
-const path = require('path');
-
-const dbPath = path.join(__dirname, '..', 'project.db');
-const whitelistPath = path.join(__dirname, '..', 'whitelist.db');
-
-if (!fs.existsSync(dbPath)) {
-    fs.writeFileSync(dbPath, '{}', 'utf8');
-}
-
-if (!fs.existsSync(whitelistPath)) {
-    fs.writeFileSync(whitelistPath, '{}', 'utf8');
-}
+const sequelize = new Sequelize(global.pjconfig.mysql.url);
 
 const app = express();
 
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(
-    bodyParser.urlencoded({
-        extended: true,
-        limit: 10 * 1024 * 1024
-    })
-);
-
-const syncService = function(clusters) {
-    const dispatchCluster = function(data) {
-        for (var i = 0; i < clusters.length; i++) {
+const syncService = function (clusters) {
+    const dispatchCluster = function (data) {
+        for (let i = 0; i < clusters.length; i++) {
             clusters[i].send(data);
         }
     };
 
-    // 主进程接收 projects 更新，然后通知 woker 进程更新
-    app.use('/getProjects', function(req, res) {
-        var param = req.query;
-        if (req.method === 'POST') {
-            param = req.body;
-        }
-
-        if (param.auth === 'badjsAcceptor' && param.projectsInfo) {
-            dispatchCluster({
-                projectsInfo: param.projectsInfo
-            });
-
-            fs.writeFile(dbPath, param.projectsInfo || '', function() {
-                logger.info('update project.db');
-            });
-        }
-
-        res.writeHead(200);
-        res.end();
-    })
-        .use('/syncWhitelist', (req, res) => {
-            if (req.method === 'POST') {
-                const payload = req.body;
-                if (payload.auth === 'badjsAcceptor' && payload.whitelist) {
-                    dispatchCluster({
-                        whitelist: payload.whitelist
-                    });
-
-                    fs.writeFile(whitelistPath, JSON.stringify(payload.whitelist), () => {
-                        logger.info('update whitelist.db');
-                    });
+    const initeWhiteList = async function () {
+        const whitelist = await sequelize.query('select uin, aid, aegisid from b_whitelist where aegisid = 0 or aegisid in (select id from b_apply  where status = 1 and online = 2)');
+        if (whitelist && whitelist.length && whitelist[0].length) {
+            const whitelistInfo = whitelist[0].reduce((p, c) => {
+                if (!p[c.aegisid]) {
+                    p[c.aegisid] = {};
                 }
-            }
-            res.status(200).end();
-        })
-        .listen(9001);
-
-    const info = fs.readFileSync(dbPath, 'utf-8');
-    let whitelist = fs.readFileSync(whitelistPath, 'utf-8');
-
-    try {
-        whitelist = JSON.parse(whitelist) || {};
-    } catch (e) {
-        whitelist = {};
+                p[c.aegisid][c.uin] = 1;
+                return p;
+            }, {});
+            dispatchCluster({
+                whitelistInfo
+            });
+        } 
     }
 
-    dispatchCluster({
-        projectsInfo: info,
-        whitelist
-    });
+    const initProject = async function () {
+        try {
+            const projects = await sequelize.query('select id, username, name, url from b_apply where status = 1 and online = 2');
+            if (projects && projects.length && projects[0].length) {
+                const projectsInfo = projects[0].reduce((p, c) => {
+                    p[c.id] = {
+                        id: c.id,
+                        url: c.url,
+                        user: c.username,
+                        name: c.name
+                    };
+                    return p;
+                }, {});
+                dispatchCluster({
+                    projectsInfo
+                });
+            }
+     
+        } catch (e) {
+            logger.warn(e);
+        }
+    }
+
+    initProject();
+    initeWhiteList();
+
+    // 主进程接收 projects 更新，然后通知 woker 进程更新
+    app.use('/syncProject', function (req, res) {
+        logger.info('project update at ' + new Date());
+        initProject();
+        res.writeHead(200);
+        res.end();
+    }).use('/syncWhitelist', (req, res) => {
+        logger.info('whitelist update at ' + new Date());
+        initeWhiteList();
+        res.status(200).end();
+    })
+        .listen(9001);
 };
 
 module.exports = syncService;

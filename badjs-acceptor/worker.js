@@ -41,21 +41,18 @@ const responseHeader = {
 global.projectsInfo = {};
 // listen for projects and whitelist update from master
 process.on('message', function(data) {
-    const json = data;
-    let info;
-    if (json.projectsInfo) {
-        info = JSON.parse(json.projectsInfo);
+    if (data.projectsInfo) {
+        let info = data.projectsInfo;
         if (typeof info === 'object') {
             for (const k in info) {
                 const v = info[k] || {};
                 v.domain = get_domain(v.url);
-                genBlacklistReg(v);
             }
             global.projectsInfo = info;
         }
     }
-    if (json.whitelist) {
-        global.whitelist = json.whitelist;
+    if (data.whitelist) {
+        global.whitelist = data.whitelist;
     }
 });
 
@@ -112,7 +109,7 @@ interceptors.forEach(function(value, key) {
     var one = require(value)();
     interceptor.add(one);
 });
-interceptor.add(require(global.pjconfig.dispatcher.module)());
+interceptor.add(require('./dispatcher')());
 
 /* -------------------------------------------------------------------------- */
 /*                              helper functions                              */
@@ -120,22 +117,6 @@ interceptor.add(require(global.pjconfig.dispatcher.module)());
 
 const get_domain = function(url) {
     return (url.toString().match(REG_DOMAIN) || ['', ''])[1].replace(/^\*\./, '');
-};
-
-var genBlacklistReg = function(data) {
-    // ip黑名单正则
-    const blacklistIPRegExpList = [];
-    (data.blacklist && data.blacklist.ip ? data.blacklist.ip : []).forEach(function(reg) {
-        blacklistIPRegExpList.push(new RegExp('^' + reg.replace(/\./g, '\\.')));
-    });
-    data.blacklistIPRegExpList = blacklistIPRegExpList;
-
-    // ua黑名单正则
-    const blacklistUARegExpList = [];
-    (data.blacklist && data.blacklist.ua ? data.blacklist.ua : []).forEach(function(reg) {
-        blacklistUARegExpList.push(new RegExp(reg, 'i'));
-    });
-    data.blacklistUARegExpList = blacklistUARegExpList;
 };
 
 function getClientIp(req) {

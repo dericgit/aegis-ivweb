@@ -1,5 +1,3 @@
-var _ = require("underscore");
-
 var has = function (obj, key) {
     return obj !== null && hasOwnProperty.call(obj, key);
 };
@@ -39,7 +37,7 @@ module.exports = function () {
                     version: queryData.version
                 };
 
-                if (_.isString(queryData.from)) {
+                if (typeof queryData.from === 'string') {
                     fixedParam.from = queryData.from;
                 }
 
@@ -50,7 +48,7 @@ module.exports = function () {
 
                 var queryArray = [];
                 for (var key in queryData) {
-                    _.isArray(queryData[key]) && queryData[key].forEach(function (value, index) {
+                    Array.isArray(queryData[key]) && queryData[key].forEach(function (value, index) {
                         queryArray[index] = queryArray[index] || {};
                         queryArray[index][key] = value;
                     });

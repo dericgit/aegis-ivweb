@@ -30,9 +30,7 @@ if (cluster.isMaster) {
         clusters.push(forkCluster);
     }
 
-    setTimeout(function() {
-        require('./service/syncService')(clusters);
-    }, 3000);
+    require('./service/syncService')(clusters);
 } else {
     require('./worker');
 }
