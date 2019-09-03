@@ -11,7 +11,6 @@ const logger = log4js.getLogger();
 const path = require('path');
 
 const monitor = require('./monitor');
-const utils = require('./utils/utils')
 
 /* -------------------------------------------------------------------------- */
 /*                                    init                                    */
