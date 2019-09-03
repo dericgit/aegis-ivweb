@@ -20,7 +20,7 @@ const syncService = function (clusters) {
     };
 
     const initeWhiteList = async function () {
-        const whitelist = await sequelize.query('select uin, aid, aegisid from b_whitelist where aegisid = 0 or aegisid in (select id from b_apply  where status = 1 and online = 2)');
+        const whitelist = await sequelize.query('select uin, aid, aegisid from b_whitelist where aegisid = 0 or aegisid in (select id from b_apply  where status = 1)');
         if (whitelist && whitelist.length && whitelist[0].length) {
             const whitelistInfo = whitelist[0].reduce((p, c) => {
                 if (!p[c.aegisid]) {
@@ -37,7 +37,7 @@ const syncService = function (clusters) {
 
     const initProject = async function () {
         try {
-            const projects = await sequelize.query('select id, username, name, url from b_apply where status = 1 and online = 2');
+            const projects = await sequelize.query('select id, username, name, url from b_apply where status = 1');
             if (projects && projects.length && projects[0].length) {
                 const projectsInfo = projects[0].reduce((p, c) => {
                     p[c.id] = {
