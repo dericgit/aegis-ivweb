@@ -108,26 +108,11 @@ module.exports = {
      * 白名单更新后， post 到 acceptor
      */
     async postToAcceptor() {
-        const whitelist = await WhitelistModel.findAll();
-        const conciseWhitelist = whitelist.reduce((p, c) => {
-            if (!p[c.aegisid]) {
-                p[c.aegisid] = {};
-            }
-            p[c.aegisid][c.uin] = 1;
-            return p;
-        }, {});
-        const options = {
-            method: 'POST',
-            uri: global.pjconfig.acceptor.pushWhitelistUrl,
-            body: {
-                whitelist: conciseWhitelist,
-                auth: 'badjsAcceptor'
-            },
-            json: true // Automatically stringifies the body to JSON
-        };
-
         try {
-            await request(options);
+            await request({
+                method: 'POST',
+                uri: global.pjconfig.acceptor.pushWhitelistUrl
+            });
         } catch (e) {
             return console.warn('Post whitelist to Acceptor fail');
         }

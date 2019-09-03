@@ -62,13 +62,9 @@ const syncService = function (clusters) {
     initeWhiteList();
 
     // 主进程接收 projects 更新，然后通知 woker 进程更新
-    app.use('/syncProjects', function (req, res) {
-        logger.info('project update at ' + new Date());
-        initProject();
-        res.writeHead(200);
-        res.end();
-    }).use('/syncWhitelist', (req, res) => {
+    app.use('/syncWhitelist', (req, res) => {
         logger.info('whitelist update at ' + new Date());
+        initProject();
         initeWhiteList();
         res.status(200).end();
     })

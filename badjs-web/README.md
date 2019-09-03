@@ -45,7 +45,7 @@ db/create.sql 是需要初始化到 mysql 的中。其中默认的超级管理�
         "queryUrl" : "http://127.0.0.1:9000/query"
     },
     "acceptor": {     //badjs-acceptor 模块的地址， 这里用于同步审核通过的业务的id 到接入层进行验证
-          "pushProjectUrl" : "http://127.0.0.1:9001/getProjects"
+        "pushWhitelistUrl": "http://127.0.0.1:9001/syncWhitelist"
     },
      "openapi": {        //badjs-acceptor 模块的地址， 这里用于同步审核通过的业务的appkey 到openapi 进行验证
         "pushProjectUrl" : "http://127.0.0.1:9002/getProjects"

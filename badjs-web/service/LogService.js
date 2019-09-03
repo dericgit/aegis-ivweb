@@ -16,8 +16,7 @@ var request = require("request");
 var LogService = function () {
 
     this.queryUrl = global.pjconfig.storage.queryUrl;
-    this.pushProjectUrl = global.pjconfig.acceptor.pushProjectUrl;
-    this.pushProjectUrl2 = global.pjconfig.openapi.pushProjectUrl;
+    this.pushProjectUrl = global.pjconfig.openapi.pushProjectUrl;
 
     // this.url = 'http://127.0.0.1:9000/query';
     logger.debug('query url : ' + this.queryUrl);
@@ -93,22 +92,6 @@ LogService.prototype = {
                 };
 
                 request.post(self.pushProjectUrl, {
-                    form: {
-                        projectsInfo: JSON.stringify(projectsInfo),
-                        auth: "badjsAcceptor"
-                    }
-                }, function (err) {
-                    if (err) {
-                        logger.warn('push projectIds to acceptor  error :' + err);
-                        result[0] = -1;
-                    } else {
-                        logger.info('push projectIds to acceptor  success');
-                        result[0] = 1;
-                    }
-                    resultCall();
-                });
-
-                request.post(self.pushProjectUrl2, {
                     form: {
                         projectsInfo: JSON.stringify(projectsInfo),
                         auth: "badjsOpen"

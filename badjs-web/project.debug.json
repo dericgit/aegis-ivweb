@@ -28,7 +28,6 @@
         "queryUrl" : "http://127.0.0.1:9000/query"
     },
     "acceptor": {
-        "pushProjectUrl" : "http://127.0.0.1:9001/syncProjects",
         "pushWhitelistUrl": "http://127.0.0.1:9001/syncWhitelist"
     },
     "openapi": {
