@@ -1,6 +1,9 @@
 var log4js = require('log4js'),
     logger = log4js.getLogger();
 
+var dispatcher = require('./acceptor');
+var save = require('./storage/MongodbStorage');
+
 var path = require("path");
 var argv = process.argv.slice(2);
 var pos = require('./cache/pos');
@@ -21,16 +24,11 @@ if (argv.indexOf('--debug') >= 0) {
 // 创建所需目录
 pos();
 
-
 global.MONGODB = global.pjconfig.mongodb;
-
-var dispatcher = require(global.pjconfig.acceptor.module);
-var save = require('./storage/MongodbStorage');
 
 // use zmq to dispatch
 dispatcher()
     .pipe(save());
-
 
 logger.info('start badjs-storage success.');
 
