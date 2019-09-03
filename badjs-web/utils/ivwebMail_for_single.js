@@ -12,9 +12,7 @@ if (argv.indexOf('--project') >= 0) {
     global.pjconfig = require(path.join(__dirname, "..", 'project.json'));
 }
 
-
 const emailConf = global.pjconfig.email;
-
 
 // create reusable transporter object using the default SMTP transport
 const transporter = nodemailer.createTransport({
@@ -69,7 +67,7 @@ module.exports = (from, to, cc, title, content, attachments, retry) => {
 };
 
 
-function sendMail (maildata) {
+function sendMail(maildata) {
     console.log('send email ....');
     return new Promise((resolve, reject) => {
         // send mail with defined transport object

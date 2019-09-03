@@ -5,7 +5,7 @@ var emailjs = require("emailjs");
 var EmailServer = null;
 var RETRY = 3;
 
-module.exports = function(from, to, cc, title, content) {
+module.exports = function (from, to, cc, title, content) {
     logger.info("Send email " + title);
     var message = {
         from: from,
@@ -23,17 +23,17 @@ module.exports = function(from, to, cc, title, content) {
         if (!EmailServer) {
             EmailServer = emailjs.server.connect({
                 host: global.pjconfig.email.smtp,
-                user:   global.pjconfig.email.smtpUser,
-                password: global.pjconfig.email.smtpPassword ,
+                user: global.pjconfig.email.smtpUser,
+                password: global.pjconfig.email.smtpPassword,
                 ssl: false
             });
         }
-        EmailServer.send(message, function(err, data) {
+        EmailServer.send(message, function (err, data) {
             times--;
-            if (err ) {
+            if (err) {
                 logger.error("Send email error " + title);
                 EmailServer = null;
-                return times>0 && send(message, times);
+                return times > 0 && send(message, times);
             }
             logger.info("Send email success " + title);
         });

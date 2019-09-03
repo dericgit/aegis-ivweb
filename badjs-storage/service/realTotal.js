@@ -10,19 +10,6 @@ var crypto = require('crypto');
 var log4js = require('log4js'),
     logger = log4js.getLogger();
 
-//var MongoClient = require('mongodb').MongoClient;
-//
-//var mongoDB;
-//// Use connect method to connect to the Server
-//MongoClient.connect(global.MONGODB.url, function(err, db) {
-//    if(err){
-//        logger.error('failed connect to mongodb');
-//    }else {
-//        logger.info('Connected correctly to mongodb');
-//    }
-//    mongoDB = db;
-//});
-
 var getYesterday = function () {
     var date = new Date();
     date.setDate(date.getDate() - 1);

@@ -1,6 +1,3 @@
-var fs = require('fs');
-var path = require('path');
-
 var log4js = require('log4js'),
     logger = log4js.getLogger();
 
@@ -47,12 +44,13 @@ setInterval(function () {
     Object.keys(newSaveData).forEach(function (key) {
         var saveValue = newSaveData[key] - 0;
         var saveKey = { key: newKey + '-' + key };
-        mongoDB.collection('total').findOneAndUpdate(saveKey, { $inc: { total: saveValue } }, { upsert: true }, function (err,
-                                                                                                                          result) {
-            logger.debug('cache total success - ' + saveKey.key + ' : ' + saveValue);
-        });
+        mongoDB.collection('total').findOneAndUpdate(saveKey,
+            { $inc: { total: saveValue } },
+            { upsert: true },
+            function (err, result) {
+                logger.debug('cache total success - ' + saveKey.key + ' : ' + saveValue);
+            });
     });
-
 }, 60000);
 
 

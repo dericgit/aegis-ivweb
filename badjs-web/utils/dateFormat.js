@@ -1,5 +1,5 @@
 /* global module */
-module.exports = function(date, fmt) {
+module.exports = function (date, fmt) {
     var o = {
         "M+": date.getMonth() + 1, //月份
         "d+": date.getDate(), //日

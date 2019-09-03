@@ -10,11 +10,10 @@ var wsServers = {};
  * @param {http.Server} [server]
  */
 module.exports = function (app, server) {
-    if(!server) {
+    if (!server) {
         server = http.createServer(app);
 
-        app.listen = function()
-        {
+        app.listen = function () {
             return server.listen.apply(server, arguments)
         }
     }
@@ -41,14 +40,14 @@ module.exports = function (app, server) {
 
         wsServers[wsPath] = wss;
 
-        wss.on('connection', function(ws) {
+        wss.on('connection', function (ws) {
             var response = new ServerResponse(ws.upgradeReq);
             response.writeHead = function (statusCode) {
                 if (statusCode > 200) ws.close();
             };
             ws.upgradeReq.method = 'ws';
 
-            for(var i = 0 ; i < middleware.length ; i ++){
+            for (var i = 0; i < middleware.length; i++) {
                 var cur = middleware[i];
                 cur(ws, ws.upgradeReq);
             }

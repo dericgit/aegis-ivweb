@@ -51,7 +51,7 @@ module.exports = (from, to, cc, title, content, attachments) => {
 };
 
 
-function timeoutSendMail () {
+function timeoutSendMail() {
 
     // 3 分钟后 处理mailList 中的数据 合并同一个的人的邮件，变成每个人只发一封邮件，避免发邮件失败的情况
     setTimeout(() => {
@@ -127,7 +127,7 @@ function timeoutSendMail () {
         intervalMail(newMailList);
     }, 180 * 1000);
 
-    function intervalMail (list) {
+    function intervalMail(list) {
         let mailTimmer = setInterval(() => {
             console.log(`mailList.length: ${list.length}`);
 
@@ -144,7 +144,7 @@ function timeoutSendMail () {
 
 }
 
-function sendMail (maildata) {
+function sendMail(maildata) {
     console.log('send email ....');
     console.log(maildata.to, maildata.subject);
     return new Promise((resolve, reject) => {
@@ -152,7 +152,7 @@ function sendMail (maildata) {
         transporter.sendMail(maildata, function (error, info) {
             if (error) {
                 console.error(error);
-                transporter.sendMail(maildata, function(e, m){
+                transporter.sendMail(maildata, function (e, m) {
                     if (e) {
                         console.error('resend email error aegin');
                     } else {
