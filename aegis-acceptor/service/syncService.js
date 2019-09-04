@@ -30,7 +30,7 @@ const syncService = function (clusters) {
                 return p;
             }, {});
             dispatchCluster({
-                whitelistInfo
+                whitelist: whitelistInfo
             });
         } 
     }

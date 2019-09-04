@@ -33,7 +33,7 @@ module.exports = {
         }
     }, {
         name: 'mq',
-        script: 'badjs-mq/app.js',
+        script: 'aegis-mq/app.js',
         output: `${base}/mq.log`,
         error: `${base}/mq_error.log`,
         instances: 1,
@@ -48,7 +48,7 @@ module.exports = {
         }
     }, {
         name: 'acceptor',
-        script: 'badjs-acceptor/app.js',
+        script: 'aegis-acceptor/app.js',
         output: `${base}/acceptor.log`,
         error: `${base}/acceptor_error.log`,
         instances: 1,
