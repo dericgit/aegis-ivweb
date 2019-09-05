@@ -10,18 +10,21 @@ const Op = Sequelize.Op;
 router.get('/:id/:type', (req, res) => {
     const id = req.params.id;
     const type = req.params.type;
-    let model;
+    let model, attributes;
     switch (type) {
         case 'static': {
             model = models.Static;
+            attributes = ['avg_time', 'create_time', 'times']
             break;
         }
         case 'fetch': {
             model = models.Fetch;
+            attributes = ['avg_time', 'create_time', 'times']
             break;
         }
         case 'performance': {
             model = models.Performance;
+            attributes = ['content_download', 'create_time', 'dns_lookup', 'dom_parse', 'id', 'resource_download', 'ssl', 'tcp', 'times', 'ttfb']
             break;
         }
         default: {
@@ -48,14 +51,16 @@ router.get('/:id/:type', (req, res) => {
         }
     };
     if (url) {
-        whereOptions.url =  decodeURIComponent(url);
+        whereOptions.url = decodeURIComponent(url);
     }
     model.findAll({
-        where: whereOptions
+        where: whereOptions,
+        attributes
     }).then(data => {
         res.json({
             ret: 0,
-            data: data
+            data: data,
+            url
         })
     })
 
