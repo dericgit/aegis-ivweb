@@ -6,11 +6,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             primaryKey: true
         },
-        type: {
-            type: DataTypes.STRING(10),
-            allowNull: false,
-            primaryKey: true
-        },
         create_time: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,

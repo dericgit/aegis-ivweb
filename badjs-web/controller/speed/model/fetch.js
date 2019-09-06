@@ -26,6 +26,14 @@ module.exports = (sequelize, DataTypes) => {
         create_time: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW
+        },
+        status: {
+            type: DataTypes.TEXT,
+            allowNull: false
+        },
+        distribution: {
+            type: DataTypes.TEXT,
+            allowNull: false
         }
     }, {
             timestamps: false,
