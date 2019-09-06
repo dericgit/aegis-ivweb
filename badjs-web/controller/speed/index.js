@@ -122,7 +122,6 @@ router.get('/:id/:type/city-speed', (req, res) => {
     const thisDay = moment(date).add(2, 'days');
     models.CitySpeed.findOne({
         where: {
-            type,
             aegis_id: id,
             create_time: {
                 [Op.between]: [lastDay.toDate(), thisDay.toDate()]
