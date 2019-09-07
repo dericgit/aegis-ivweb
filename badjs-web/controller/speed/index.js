@@ -78,6 +78,37 @@ router.get('/:id/fetch-daily', (req, res) => {
     })
 });
 
+
+router.get('/:id/fetch-top', (req, res) => {
+    const { id } = req.params;
+    const { startDate, endDate, limit } = req.query;
+    if (!id) {
+        res.json(403, {
+            ret: 2000,
+            error: 'INVALID_VERIFY_STATE',
+            message: '传参无效'
+        })
+    }
+
+    models.Fetch.findAll({
+        where: {
+            aegis_id: id,
+            create_time: {
+                [Op.between]: [new Date(parseInt(startDate)), new Date(parseInt(endDate))],
+            },
+        },
+        attributes: [[Sequelize.fn('AVG', Sequelize.col('avg_time')), 'avg'], [Sequelize.fn('SUM', Sequelize.col('times')), 'times'], 'url'],
+        group: 'url',
+        limit: parseInt(limit) || 10,
+        order: Sequelize.literal('avg DESC')
+    }).then(data => {
+        res.json({
+            ret: 0,
+            data
+        });
+    })
+});
+
 router.get('/:id/:type', (req, res) => {
     const id = req.params.id;
     const type = req.params.type;
