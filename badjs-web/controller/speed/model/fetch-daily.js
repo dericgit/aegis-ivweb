@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = (sequelize, DataTypes) => {
-    const CitySpeed = sequelize.define('CitySpeed', {
+    const FetchDaily = sequelize.define('FetchDaily', {
         aegis_id: {
             type: DataTypes.INTEGER,
             primaryKey: true
@@ -11,20 +11,27 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: DataTypes.NOW,
             primaryKey: true
         },
-        city_speed: {
+        speed: {
+            type: DataTypes.FLOAT,
+            allowNull: false
+        },
+        status: {
             type: DataTypes.TEXT,
             allowNull: false
         },
-        city_status: {
+        distribution: {
             type: DataTypes.TEXT,
             allowNull: false
-        },
-        city_distribution: {
-            type: DataTypes.TEXT,
-            allowNull: false
-        },
+        }
     }, {
-        timestamps: false
-    });
-    return CitySpeed;
+            timestamps: false,
+            indexes: [
+                {
+                    unique: false,
+                    fields: ['create_time']
+                }
+            ]
+        }
+    );
+    return FetchDaily;
 }

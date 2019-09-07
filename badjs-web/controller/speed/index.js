@@ -108,10 +108,10 @@ router.get('/:id/:type/url', (req, res) => {
 });
 
 
-router.get('/:id/:type/city-speed', (req, res) => {
-    const { id, type } = req.params;
+router.get('/:id/static-daily', (req, res) => {
+    const { id } = req.params;
     const { date } = req.query;
-    if (!id || !type || !date) {
+    if (!id || !date) {
         res.json(403, {
             ret: 2000,
             error: 'INVALID_VERIFY_STATE',
@@ -120,7 +120,7 @@ router.get('/:id/:type/city-speed', (req, res) => {
     }
     const lastDay = moment(date).add(1, 'days');
     const thisDay = moment(date).add(2, 'days');
-    models.CitySpeed.findOne({
+    models.StaticDaily.findOne({
         where: {
             aegis_id: id,
             create_time: {
@@ -139,6 +139,42 @@ router.get('/:id/:type/city-speed', (req, res) => {
             citySpeed,
             cityStatus,
             cityDistribution
+        });
+    })
+});
+
+
+router.get('/:id/fetch-daily', (req, res) => {
+    const { id } = req.params;
+    const { date } = req.query;
+    if (!id || !date) {
+        res.json(403, {
+            ret: 2000,
+            error: 'INVALID_VERIFY_STATE',
+            message: '传参无效'
+        })
+    }
+    const lastDay = moment(date).add(1, 'days');
+    const thisDay = moment(date).add(2, 'days');
+    models.FetchDaily.findOne({
+        where: {
+            aegis_id: id,
+            create_time: {
+                [Op.between]: [lastDay.toDate(), thisDay.toDate()]
+            }
+        }
+    }).then(data => {
+        let speed, status, distribution;
+        if (data) {
+            speed = data.speed;
+            status = JSON.parse(data.status);
+            distribution = JSON.parse(data.distribution);
+        }
+        res.json({
+            ret: 0,
+            speed,
+            status,
+            distribution
         });
     })
 });
