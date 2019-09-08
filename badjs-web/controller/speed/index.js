@@ -6,6 +6,7 @@ const models = require('./model');
 const moment = require('moment');
 const Sequelize = models.Sequelize;
 const Op = Sequelize.Op;
+const { merge } = require('./utils');
 
 router.get('/:id/static-daily', (req, res) => {
     const { id } = req.params;
@@ -130,9 +131,17 @@ router.get('/:id/cgi-specific', (req, res) => {
         },
         attributes: ['status', 'distribution']
     }).then(data => {
+        const status = {}, distribution = {};
+        data.forEach(item => {
+            status = merge(status, JSON.parse(item.status));
+            distribution = merge(distribution, JSON.parse(item.distribution));
+        });
         res.json({
             ret: 0,
-            data: data,
+            data: {
+                status,
+                distribution
+            },
             url
         })
     })
