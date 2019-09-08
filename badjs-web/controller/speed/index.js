@@ -131,7 +131,7 @@ router.get('/:id/cgi-specific', (req, res) => {
         },
         attributes: ['status', 'distribution']
     }).then(data => {
-        const status = {}, distribution = {};
+        let status = {}, distribution = {};
         data.forEach(item => {
             status = merge(status, JSON.parse(item.status));
             distribution = merge(distribution, JSON.parse(item.distribution));
