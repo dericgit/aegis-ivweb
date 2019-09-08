@@ -109,6 +109,36 @@ router.get('/:id/fetch-top', (req, res) => {
     })
 });
 
+router.get('/:id/cgi-specific', (req, res) => {
+    const id = req.params.id;
+    const { startDate, endDate, url } = req.query;
+    if (!id) {
+        res.json(403, {
+            ret: 2000,
+            error: 'INVALID_VERIFY_STATE',
+            message: '传参无效'
+        });
+        return;
+    }
+    model.findAll({
+        where: {
+            aegis_id: id,
+            create_time: {
+                [Op.between]: [new Date(parseInt(startDate)), new Date(parseInt(endDate))],
+            },
+            url: decodeURIComponent(url)
+        },
+        attributes: ['status', 'distribution']
+    }).then(data => {
+        res.json({
+            ret: 0,
+            data: data,
+            url
+        })
+    })
+
+});
+
 router.get('/:id/:type', (req, res) => {
     const id = req.params.id;
     const type = req.params.type;
