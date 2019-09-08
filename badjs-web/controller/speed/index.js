@@ -120,7 +120,7 @@ router.get('/:id/cgi-specific', (req, res) => {
         });
         return;
     }
-    model.findAll({
+    models.Fetch.findAll({
         where: {
             aegis_id: id,
             create_time: {
