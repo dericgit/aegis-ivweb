@@ -1,8 +1,8 @@
 'use strict';
 const Sequelize = require('sequelize');
-const whitelistSequelize = require('../config/sequelize').whiteList;
+const sequelize = require('../config/sequelize').sequelize;
 
-const WhitelistAegis = whitelistSequelize.define('b_user', {
+const UserManageModel = sequelize.define('b_user', {
     role: Sequelize.INTEGER(11),
     verify_state: Sequelize.INTEGER(1),
     loginName: Sequelize.STRING(100),
@@ -14,4 +14,4 @@ const WhitelistAegis = whitelistSequelize.define('b_user', {
     underscored: false
 });
 
-module.exports = WhitelistAegis;
+module.exports = UserManageModel;
