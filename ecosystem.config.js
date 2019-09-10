@@ -18,7 +18,7 @@ module.exports = {
         }
     }, {
         name: 'storage',
-        script: 'badjs-storage/app.js',
+        script: 'aegis-storage/app.js',
         output: `${base}/storage.log`,
         error: `${base}/storage_error.log`,
         instances: 1,
