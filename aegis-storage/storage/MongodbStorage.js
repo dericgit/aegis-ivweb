@@ -1,150 +1,69 @@
-const MongoClient = require('mongodb').MongoClient;
-const http = require('http');
-const map = require('map-stream');
-
+const mongoose = require('mongoose');
 const log4js = require('log4js');
 const logger = log4js.getLogger();
 const monitor = require('../service/monitor');
-
+const map = require('map-stream');
 const realTotal = require('../service/realTotalMaster');
 
-let mongoDB, adminMongoDB;
-
-
-const hadCreatedCollection = {};
-
-const tryInit = function (db, collectionName, cb) {
-    if (hadCreatedCollection[collectionName] === 'ping') {
-        return;
-    }
-    if (hadCreatedCollection[collectionName] === true) {
-        const collection = db.collection(collectionName);
-        cb(null, collection);
-        return true;
-    }
-
-    hadCreatedCollection[collectionName] = 'ping';
-    // 每个 collection 最大一千万条数据，占有空间最大 20G
-    db.createCollection(collectionName, { capped: true, size: 21474836480, max: 10000000 }, function (err, collection) {
-        if (err) {
-            console.error('创建 collection 失败:', err);
-            return;
-        }
-        console.log('创建 collection 成功: ', collectionName);
-        collection.indexExists('date_-1_level_1', function (errForIE, result) {
-            if (errForIE) {
-                throw errForIE;
-            }
-            if (!result) {
-                collection.createIndex({ date: -1, level: 1 }, function (errForCI) {
-                    if (errForCI) {
-                        throw errForCI;
-                    }
-                    console.log(collectionName + '创建索引 date_-1_level_1 成功');
-                    if (global.MONGODB.isShard) {
-                        adminMongoDB.command({
-                            shardcollection: 'badjs.' + collectionName,
-                            key: { _id: 'hashed' }
-                        }, function (errForShard, info) {
-                            if (errForShard) {
-                                throw errForShard;
-                            } else {
-                                logger.info(collectionName + ' shard correctly');
-                                cb(null, collection);
-                                hadCreatedCollection[collectionName] = true;
-
-                            }
-                        });
-                    } else {
-                        cb(null, collection);
-                        hadCreatedCollection[collectionName] = true;
-                    }
-
-                });
-            } else {
-                cb(null, collection);
-                hadCreatedCollection[collectionName] = true;
-            }
-        });
-    });
-};
-
-const hadCreatedUINCollection = {};
-
-const createUinIndex = function (collection, collectionName, cb) {
-    if (hadCreatedUINCollection[collectionName] === 'ping') {
-        return;
-    }
-    if (hadCreatedUINCollection[collectionName] === true) {
-        cb(null, collection);
-        return true;
-    }
-
-    hadCreatedUINCollection[collectionName] = 'ping';
-    collection.indexExists('uin_1', function (errForIE, result) {
-        if (errForIE) {
-            throw errForIE;
-        }
-        if (!result) {
-            collection.createIndex({ uin: 1 }, function (errForCI) {
-                console.log(collectionName + '创建索引 uin 成功');
-                if (errForCI) {
-                    throw errForCI;
-                }
-                hadCreatedUINCollection[collectionName] = true;
-                cb(null, collection);
-
-            });
-        } else {
-            hadCreatedUINCollection[collectionName] = true;
-            cb(null, collection);
-        }
-    });
-};
-
-
-const insertDocuments = function (db, model) {
-    const collectionName = 'badjslog_' + model.id;
-
-    tryInit(db, collectionName, function (err, collection) {
-        createUinIndex(collection, collectionName, function (error, coll) {
-            coll.insert([
-                model.model
-            ], function (err, result) {
-                if (err) {
-                    monitor(34471884); // [ivweb-aegis] mongodb插入失败
-                    console.log('badjs-storage insert documents err', err);
-                    errorNum++;
-                } else {
-                    count++;
-                }
-            });
-        });
-    });
-};
-
-
-MongoClient.connect(global.MONGODB.url, function (err, db) {
-    if (err) {
-        logger.error('failed connect to mongodb');
-    } else {
-        logger.info('Connected correctly to mongodb');
-    }
-    mongoDB = db.db('badjs');
+const connection = mongoose.createConnection(global.MONGODB.url, {
+    auth: {
+        authSource: 'admin'
+    },
+    useCreateIndex: true,
+    useNewUrlParser: true
 });
 
+// 每个 collection 最大一千万条数据，占有空间最大 20G
+const LogSchema = new mongoose.Schema({
+    msg: String,
+    ext: String,
+    level: Number,
+    from: String,
+    version: String,
+    uin: { type: String, index: true },
+    aid: { type: String, index: true },
+    ip: String,
+    userAgent: String,
+    date: Number,
+    all: String
+}, { capped: { size: 21474836480, max: 10000000, autoIndexId: true } });
 
-if (global.MONGODB.isShard) {
-    MongoClient.connect(global.MONGODB.adminUrl, function (err, db) {
+LogSchema.index({ date: -1, level: 1 });
+
+connection.on('error', console.error.bind(console, 'connection error 😢:'));
+connection.once('open', function () {
+    console.log('connect to mongodb, 😊');
+    connection.db.listCollections().toArray(function (err, collections) {
         if (err) {
-            logger.error('failed connect to mongodb use admin admin');
+            console.log(err);
         } else {
-            logger.info('Connected  correctly to mongodb use admin');
+            // 单例初始化
+            collections.forEach(element => {
+                console.log(element.name);
+            });
         }
-        adminMongoDB = db;
     });
+});
+
+const modelMap = {};
+
+function initModel(collectionName) {
+    if (!modelMap[collectionName]) {
+        modelMap[collectionName] = connection.model(collectionName, LogSchema);
+    }
+    return modelMap[collectionName];
 }
 
+const insertDocuments = function (id, data) {
+    const collectionName = 'badjslog_' + id;
+    const model = initModel(collectionName);
+    try {
+        model.create(data);
+    } catch (e) {
+        monitor(34471884); // [ivweb-aegis] mongodb插入失败
+        logger.warn('badjs-storage insert documents err' + e);
+    }
+};
 
 module.exports = function () {
     return map(function (data) {
@@ -164,12 +83,6 @@ module.exports = function () {
             logger.info('not id data');
             return;
         }
-
-        if (!mongoDB) {
-            dataStr.substring(dataStr.indexOf(' '));
-            logger.info('cannot connect mongodb');
-            return;
-        }
         const id = data.id;
         delete data.id;
 
@@ -179,10 +92,7 @@ module.exports = function () {
         }
         data.all = all;
 
-        insertDocuments(mongoDB, {
-            id: id,
-            model: data
-        });
+        insertDocuments(id, data);
 
         if (data.level == 4) {
             realTotal.increase(id, data);
@@ -190,13 +100,3 @@ module.exports = function () {
 
     });
 };
-
-let count = 0, errorNum = 0;
-http.createServer((req, res) => {
-    res.end(`${count},${errorNum}`);
-    count = 0;
-    errorNum = 0;
-}).listen(2002, () => {
-    console.log('report server listen at 2002.');
-});
-
