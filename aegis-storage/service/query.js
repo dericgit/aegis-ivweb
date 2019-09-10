@@ -215,12 +215,10 @@ module.exports = function () {
                 json.level[key] = value - 0;
             });
 
-
             queryJSON.date = {
                 $lt: endDate,
                 $gt: startDate
             };
-
 
             queryJSON.level = {
                 $in: json.level
@@ -232,9 +230,6 @@ module.exports = function () {
                 json.index = 0;
             }
 
-            if (global.debug) {
-                logger.debug("query logs id=" + id + ",query=" + JSON.stringify(queryJSON));
-            }
             logger.info("query logs id=" + id + ",query=" + JSON.stringify(queryJSON));
 
             mongoDB.collection('badjslog_' + id).find(queryJSON, function (error, cursor) {
@@ -247,16 +242,15 @@ module.exports = function () {
                 })
                     .skip(json.index * LIMIT)
                     .limit(LIMIT)
-                    .toArray(function (err, item) {
-                        res.write(JSON.stringify(item));
+                    .toArray(function (err, items = []) {
+                        res.write(JSON.stringify(items.map(item => {
+                            delete item['_id'];
+                            delete item['all'];
+                            return item;
+                        })));
                         res.end();
-
                     });
-
-
             });
-
-
         })
         .use('/errorMsgTop', function (req, res) {
             var error = validateDate(req.query.startDate);
