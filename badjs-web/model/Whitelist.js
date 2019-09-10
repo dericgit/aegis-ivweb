@@ -1,6 +1,6 @@
 'use strict';
 const Sequelize = require('sequelize');
-const whitelistSequelize = require('../config/sequelize').whiteList;
+const whitelistSequelize = require('../config/sequelize').sequelize;
 
 const WhitelistAegis = whitelistSequelize.define('b_whitelist', {
     openid: Sequelize.STRING(20),

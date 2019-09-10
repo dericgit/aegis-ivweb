@@ -209,3 +209,18 @@ CREATE TABLE `b_whitelist` (
   `aegisid` varchar(20) DEFAULT '0',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
+
+
+--
+-- Table structure for table `b_user_pv`
+--
+DROP TABLE IF EXISTS `b_user_pv`;
+
+CREATE TABLE `b_user_pv` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `aegis_id` int(11) NOT NULL,
+  `userName` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
+  `createTime` datetime DEFAULT CURRENT_TIMESTAMP,
+  `pvDesc` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

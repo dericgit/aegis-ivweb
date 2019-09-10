@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const whitelistConfig = global.pjconfig.mysql.url;
+const mysqlUrl = global.pjconfig.mysql.url;
 
 const sequelizeOptions = {
     pool: {
@@ -18,5 +18,5 @@ const sequelizeOptions = {
 };
 
 module.exports = {
-    whiteList: new Sequelize(whitelistConfig, sequelizeOptions)
+    sequelize: new Sequelize(mysqlUrl, sequelizeOptions)
 };
