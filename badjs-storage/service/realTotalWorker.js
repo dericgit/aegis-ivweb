@@ -17,7 +17,6 @@ if (isDebug) {
     logger.level = 'DEBUG';
 }
 
-
 var getYesterday = function () {
     var date = new Date();
     date.setDate(date.getDate() - 1);

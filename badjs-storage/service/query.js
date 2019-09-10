@@ -12,8 +12,6 @@ const log4js = require('log4js'),
 const fs = require("fs");
 const path = require("path");
 
-//const realTotal = require('../service/realTotal');
-
 const url = global.MONGODB.url;
 const LIMIT = global.MONGODB.limit || 500;
 

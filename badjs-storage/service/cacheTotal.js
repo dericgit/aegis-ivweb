@@ -31,14 +31,14 @@ var dateFormat = function (date, fmt) {
     return fmt;
 };
 
-var key = dateFormat(new Date, 'yyyy-MM-dd');
+var key = dateFormat(new Date(), 'yyyy-MM-dd');
 var saveData = {};
 
 setInterval(function () {
     var newKey = key;
     var newSaveData = JSON.parse(JSON.stringify(saveData));
 
-    key = dateFormat(new Date, 'yyyy-MM-dd');
+    key = dateFormat(new Date(), 'yyyy-MM-dd');
     saveData = {};
 
     Object.keys(newSaveData).forEach(function (key) {

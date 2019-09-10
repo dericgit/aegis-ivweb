@@ -1,12 +1,8 @@
 var log4js = require('log4js'),
     logger = log4js.getLogger();
 
-var dispatcher = require('./acceptor');
-var save = require('./storage/MongodbStorage');
-
 var path = require("path");
 var argv = process.argv.slice(2);
-var pos = require('./cache/pos');
 
 if (argv.indexOf('--project') >= 0) {
     global.pjconfig = require(path.join(__dirname, 'project.debug.json'));
@@ -21,10 +17,13 @@ if (argv.indexOf('--debug') >= 0) {
     logger.level = 'INFO';
 }
 
+global.MONGODB = global.pjconfig.mongodb;
+
+var dispatcher = require('./acceptor');
+var save = require('./storage/MongodbStorage');
+var pos = require('./cache/pos');
 // 创建所需目录
 pos();
-
-global.MONGODB = global.pjconfig.mongodb;
 
 // use zmq to dispatch
 dispatcher()
@@ -34,5 +33,4 @@ logger.info('start badjs-storage success.');
 
 setTimeout(function () {
     require('./service/query')();
-    require('./service/autoClear')();
 }, 1000);
