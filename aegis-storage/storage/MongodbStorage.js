@@ -13,8 +13,7 @@ const connection = mongoose.createConnection(global.MONGODB.url, {
     useNewUrlParser: true
 });
 
-// 每个 collection 最大一千万条数据，占有空间最大 20G
-const LogSchema = new mongoose.Schema({
+const schemaObj = {
     msg: String,
     ext: String,
     level: Number,
@@ -24,9 +23,12 @@ const LogSchema = new mongoose.Schema({
     aid: { type: String, index: true },
     ip: String,
     userAgent: String,
-    date: Number,
-    all: String
-}, { capped: { size: 21474836480, max: 10000000, autoIndexId: true } });
+    date: Number
+}
+
+// 每个 collection 最大一千万条数据，占有空间最大 20G
+const LogSchema = new mongoose.Schema(Object.assign({ all: String }, schemaObj),
+    { capped: { size: 21474836480, max: 10000000, autoIndexId: true } });
 
 LogSchema.index({ date: -1, level: 1 });
 
@@ -88,7 +90,9 @@ module.exports = function () {
 
         let all = '';
         for (const key in data) {
-            all += ';' + key + '=' + data[key];
+            if (key in schemaObj) {
+                all += ';' + key + '=' + data[key];
+            }
         }
         data.all = all;
 
