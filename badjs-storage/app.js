@@ -33,4 +33,5 @@ logger.info('start badjs-storage success.');
 
 setTimeout(function () {
     require('./service/query')();
+    require('./service/autoClear')();
 }, 1000);
