@@ -47,6 +47,7 @@ module.exports = {
         try {
             const findResults = await userManageService.getList({
                 where,
+                order: [['id', 'DESC']],
                 offset: parseInt(offset),
                 limit: parseInt(limit)
             });
