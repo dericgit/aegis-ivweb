@@ -1,8 +1,8 @@
 'use strict';
 const Sequelize = require('sequelize');
-const whitelistSequelize = require('../config/sequelize').whiteList;
+const sequelize = require('../config/sequelize').sequelize;
 
-const WhitelistAegis = whitelistSequelize.define('b_apply', {
+const ApplyModel = sequelize.define('b_apply', {
     id: {
         type: Sequelize.INTEGER(11),
         allowNull: false,
@@ -13,4 +13,4 @@ const WhitelistAegis = whitelistSequelize.define('b_apply', {
     timestamps: false
 });
 
-module.exports = WhitelistAegis;
+module.exports = ApplyModel;
