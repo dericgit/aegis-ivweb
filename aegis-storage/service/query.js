@@ -12,7 +12,7 @@ const log4js = require('log4js'),
 const fs = require("fs");
 const path = require("path");
 
-const url = global.MONGODB.url;
+const url = global.MONGODB.adminUrl;
 const LIMIT = global.MONGODB.limit || 500;
 
 let mongoDB;

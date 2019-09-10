@@ -5,7 +5,7 @@ var MongoClient = require('mongodb').MongoClient;
 
 var mongoDB;
 // Use connect method to connect to the Server
-MongoClient.connect(global.MONGODB.url, function (err, db) {
+MongoClient.connect(global.MONGODB.adminUrl, function (err, db) {
     if (err) {
         logger.error('failed connect to mongodb');
     } else {
