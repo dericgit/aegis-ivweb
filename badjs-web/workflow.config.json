@@ -1,9 +1,0 @@
-{
-  "path" : "./workflow",
-  "workflow": [
-    "InitWorker",
-    "ExpressInitWorker",
-    "ServiceInitWorker",
-    "Ping"
-  ]
-}
