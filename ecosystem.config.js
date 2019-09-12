@@ -3,7 +3,7 @@ const base = '/data/log/pm2';
 module.exports = {
     apps: [{
         name: 'web',
-        script: 'badjs-web/app.js',
+        script: 'aegis-web/app.js',
         output: `${base}/web.log`,
         error: `${base}/web_error.log`,
         instances: 1,
