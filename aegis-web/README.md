@@ -1,6 +1,6 @@
-## badjs-storage
+## aegis-web
 
-> badjs manage system .
+> aegis manage system .
 
 ## 运行
 
@@ -33,9 +33,10 @@ $ npm run build
 db/create.sql 是需要初始化到 mysql 的中。其中默认的超级管理员帐号是 admin ， 密码是 admin
 
 ### 配置说明
-```
+
+```sh
 {
-    "host" : "http://badjs.server.com/",   //配额管理服务器地址，用于邮件中的图片展示
+    "host" : "https://aegis.ivweb.io",   //配额管理服务器地址，用于邮件中的图片展示
     "mysql" : {
            "url" : "mysql://root:root@localhost:3306/badjs" // mysql 地址
     },
@@ -44,17 +45,17 @@ db/create.sql 是需要初始化到 mysql 的中。其中默认的超级管理�
       "errorMsgTopCacheUrl" : "http://127.0.0.1:9000/errorMsgTopCache",
         "queryUrl" : "http://127.0.0.1:9000/query"
     },
-    "acceptor": {     //badjs-acceptor 模块的地址， 这里用于同步审核通过的业务的id 到接入层进行验证
+    "acceptor": {     //aegis-acceptor 模块的地址， 这里用于同步审核通过的业务的id 到接入层进行验证
         "pushWhitelistUrl": "http://127.0.0.1:9001/syncWhitelist"
     },
-    "mq" : {       // badjs-mq 的地址
+    "mq" : {       // aegis-mq 的地址
         "url" : "tcp://127.0.0.1:10000",
-        "subscribe" : "badjs"     // 跟 badjs-aceptor 中的subscribe 对应
+        "subscribe" : "aegis"     // 跟 aegis-aceptor 中的subscribe 对应
          "module": "axon"      // 指定 mq 模块， 
     },
     "email": {      // 发送 email 配置
-        "homepage": "http://badjs.server.com/user/index.html",  // 邮件中的 快捷入口
-        "from": "noreply-badjs@demo.com",                    //邮件中的发送者名字
+        "homepage": "https://aegis.ivweb.io",  // 邮件中的 快捷入口
+        "from": "noreply-aegis@demo.com",                    //邮件中的发送者名字
         "smtp": "smtp.demo.com",                             // smtp 服务器
         "emailSuffix" : "@demo.com",         //收件人的邮件后缀，收件人地址 username +  emailSuffix
         "time": "09:00:00",                     // 几点发送邮件

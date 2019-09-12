@@ -9,13 +9,14 @@
 --project 使用测试环境（ project.debug.json ）配置 ， 默认使用 project.json
 
 # 配置说明
-```
+
+```sh
 {
     "port" : 80,  // 启动端口
-    "dispatcher": {   //推送日志给那台机器，这里配置推送给 badjs-mq
+    "dispatcher": {   // 推送日志给那台机器，这里配置推送给 badjs-mq
         "port": 10001,
         "address": "127.0.0.1",
-        "subscribe": "badjs"       //数据分发采用 pub/sub 模块，这个是 subscriber 需要 subscribe 的 key
+        "subscribe": "aegis"       // 数据分发采用 pub/sub 模块，这个是 subscriber 需要 subscribe 的 key
     },
     "interceptors" :
             [
@@ -26,6 +27,3 @@
             ]
 }
 ```
-
-
-

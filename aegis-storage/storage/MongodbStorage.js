@@ -63,7 +63,7 @@ const insertDocuments = function (id, data) {
         model.create(data);
     } catch (e) {
         monitor(34471884); // [ivweb-aegis] mongodb插入失败
-        logger.warn('badjs-storage insert documents err' + e);
+        logger.warn('aegis-storage insert documents err' + e);
     }
 };
 

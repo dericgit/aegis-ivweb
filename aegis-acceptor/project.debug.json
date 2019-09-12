@@ -3,7 +3,7 @@
     "dispatcher": {
         "port": 10001,
         "address": "127.0.0.1",
-        "subscribe": "badjs"
+        "subscribe": "aegis"
     },
     "mysql": {
         "url": "mysql://root:root@localhost:3306/badjs"

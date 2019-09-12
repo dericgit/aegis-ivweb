@@ -35,13 +35,13 @@
     "secretKey": "as2123zfxgf_badjs_fff",
     "mq": {
         "url": "tcp://127.0.0.1:10000",
-        "subscribe": "badjs",
+        "subscribe": "aegis",
         "module": "axon"
     },
     "wechat": "",
     "wechat_ping": "",
     "email": {
-        "from": "noreply-badjs@demo.com",
+        "from": "noreply-aegis@demo.com",
         "emailSuffix" : "@demo.com",
         "smtp": "smtp.demo.com",
         "time": "09:00:00",

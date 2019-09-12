@@ -36,5 +36,5 @@ acceptor.on('message', function (data) {
     dispatcher.send(data);
 });
 
-logger.info('start badjs-mq success. ');
+logger.info('start aegis-mq success. ');
 

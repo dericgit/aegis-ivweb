@@ -43,7 +43,7 @@ var sourceMapAction = {
                 data: {
                     project: project,
                     name: name,
-                    path: 'http://badjs2.ivweb.io/sm/' + project + '/' + name
+                    path: 'http://aegis.ivweb.io/sm/' + project + '/' + name
                 }
             });
         });

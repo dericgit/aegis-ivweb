@@ -29,7 +29,7 @@ pos();
 dispatcher()
     .pipe(save());
 
-logger.info('start badjs-storage success.');
+logger.info('start aegis-storage success.');
 
 setTimeout(function () {
     require('./service/query')();
