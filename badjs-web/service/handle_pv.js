@@ -21,7 +21,9 @@ const rl = readline.createInterface({
 let badjsid;
 
 rl.on('line', (input) => {
-    const r = /\/badjs\/(\d+)/g.exec(input);
+    let r = /\/badjs\/(\d+)/g.exec(input); // 'GET /badjs/43 HTTP/1.1'
+
+    if (!r) r = /[?|&]id=(\d+)/g.exec(input); // 'GET /aegis/whitelist?uin=0&aid=5298e654-fe51-4373-8245-a5bf5df3107b&id=602 HTTP/1.1'
 
     if (r) {
         badjsid = r[1];
