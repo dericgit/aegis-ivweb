@@ -2,18 +2,15 @@
 ## NodeJS
 #############
 node_modules/
-coverage.html
-web-debug.bat
-badjs-web/static/scoreimg/
+aegis-web/static/scoreimg/
+aegis-web/static/img/tmp
 **project.json
-
 
 #############
 ## webstorm
 #############
 .idea/
 .vscode/
-
 
 .pm2/
 offline_log
