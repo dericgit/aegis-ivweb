@@ -78,5 +78,5 @@ logger.info('Listen At Port: ' + global.pjconfig.port);
 const port = parseInt(global.pjconfig.port, 10) || 80;
 module.exports = function () {
     app.listen(port);
-    logger.info('start badjs-web , listen ' + port + ' ...');
+    logger.info('start aegis-web , listen ' + port + ' ...');
 };
