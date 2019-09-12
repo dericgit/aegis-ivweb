@@ -26,7 +26,6 @@
     "multer": "^1.4.1",
     "mysql": "^2.11.1",
     "mysql2": "^1.6.5",
-    "node-highcharts-exporting-v2": "^1.0.2",
     "nodemailer": "^2.6.4",
     "orm": "^5.0.4",
     "orm-transaction": "0.0.2",

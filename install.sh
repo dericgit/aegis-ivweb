@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 echo '下载安装代码'
-git clone https://github.com/iv-web/badjs2.git
+git clone https://github.com/iv-web/aegis-ivweb.git
 cd badjs2
 echo '安装npm依赖'
 npm run install
