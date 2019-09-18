@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const logger = require('log4js').getLogger();
 const userManageService = require('../../service/UserManageService');
+const sendMail = require('../../utils/email_tof');
 
 function responseError(res, error, fallbackMsg) {
     let errMsg = fallbackMsg;
@@ -85,7 +86,7 @@ module.exports = {
                 verify_state
             });
             if (verify_state === 1 && !!email) {
-                // @todo mail 
+                sendMail({ userList: [payload.chineseName], title: 'aegis 权限审批通过', subtitle: '感谢您使用 aegis 前端监控平台', msgInfo: 'aegis 权限审批通过, 感谢您使用 aegis 前端监控平台' });
             }
             if (!result) {
                 return res.status(200).json({
