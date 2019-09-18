@@ -85,10 +85,11 @@ module.exports = {
                 email,
                 verify_state
             });
-            if (verify_state === 2 && !!email) {
+            if (verify_state === '2' && !!email) {
                 const content = [
-                    { 'type': 'h2', 'text': '打开 aegis.oa.com 了解如何接入' },
-                    { 'type': 'h2', 'text': '打开 aegis.ivweb.io 查看项目信息' },
+                    { 'type': 'h1', 'text': '提高开发质量，守护项目健康' },
+                    { 'type': 'p', 'text': '打开 aegis.oa.com 了解如何接入' },
+                    { 'type': 'p', 'text': '打开 aegis.ivweb.io 查看项目信息' },
                     { 'type': 'line' }
                 ];
                 sendMail({ userList: [chineseName], title: 'aegis 权限审批通过', subtitle: '感谢您使用 aegis 前端监控平台', content, msgInfo: 'aegis 权限审批通过, 感谢您使用 aegis 前端监控平台' });
