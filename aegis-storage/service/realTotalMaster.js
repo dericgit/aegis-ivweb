@@ -44,7 +44,7 @@ const checkMail = function (id) {
             { 'type': 'p', 'text': 'top error: ' },
             { 'type': 'line' }
         ];
-        email({ userList, title, subtitle, content, msgInfo });
+        mail({ userList, title, subtitle, content, msgInfo });
     }
 }
 
