@@ -1,6 +1,6 @@
 const email = require('../mail');
 
-const userList = ['tickli', 'adamhe', ''];
+const userList = ['tickli'];
 const title = 'aegis 错误告警';
 const subtitle = '每分钟单项目错误次数超过20次的时候，您会收到此报警，回复no拒收此邮件';
 
