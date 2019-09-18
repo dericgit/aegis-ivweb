@@ -5,6 +5,7 @@
         "isShard" : false,
         "limit": 500
     },
+    "tof": "http://xxx/sendTof",
     "acceptor": {
       "port" : 10000,
       "address" : "127.0.0.1",

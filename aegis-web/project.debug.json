@@ -47,6 +47,7 @@
         "time": "09:00:00",
         "top": 20
     },
+    "tof": "http://xxx/sendTof",
     "ping": [],
     "errorMailTo": "xx@yy.com",
     "ownerMailTo": "xx@yy.com,a@b.com",
