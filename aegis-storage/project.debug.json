@@ -8,8 +8,7 @@
     "acceptor": {
       "port" : 10000,
       "address" : "127.0.0.1",
-      "subscribe": "aegis",
-      "module": "./acceptor/axon"
+      "subscribe": "aegis"
     },
     "maxAge" : 7,
     "realTotal" : 3,

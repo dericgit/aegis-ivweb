@@ -84,6 +84,9 @@ module.exports = {
                 email,
                 verify_state
             });
+            if (verify_state === 1 && !!email) {
+                // @todo mail 
+            }
             if (!result) {
                 return res.status(200).json({
                     ret: 1007,

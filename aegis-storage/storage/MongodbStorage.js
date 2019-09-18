@@ -4,7 +4,7 @@ const logger = log4js.getLogger();
 const monitor = require('../service/monitor');
 const map = require('map-stream');
 const realTotal = require('../service/realTotalMaster');
-
+logger.info(global.MONGODB)
 const connection = mongoose.createConnection(global.MONGODB.url, {
     auth: {
         authSource: 'admin'
@@ -21,6 +21,7 @@ const schemaObj = {
     version: String,
     uin: { type: String, index: true },
     aid: { type: String, index: true },
+    sessionid: { type: String, index: true },
     ip: String,
     userAgent: String,
     date: Number

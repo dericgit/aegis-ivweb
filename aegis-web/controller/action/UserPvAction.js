@@ -2,6 +2,30 @@ const logger = require('log4js').getLogger();
 const UserPvService = require('../../service/UserPvService');
 
 module.exports = {
+    async listUserPvById(payload, req, res) {
+        const { aegis_id } = payload;
+        if (!aegis_id) {
+            return res.status(500).json({
+                ret: 1002,
+                msg: '参数错误'
+            });
+        }
+
+        try {
+            const findResults = await UserPvService.findBatchPv({
+                where: {
+                    aegis_id
+                }
+            });
+            console.log(findResults);
+        } catch (error) {
+            res.status(500).json({
+                ret: 1000,
+                msg: error
+            });
+        }
+    },
+
     async addUserPv(payload, req, res) {
         const { aegis_id, pvDesc } = payload;
 
@@ -70,7 +94,7 @@ module.exports = {
         }
 
         try {
-            const result = await UserPvService.updateUserPvDesc(id, {pvDesc});
+            const result = await UserPvService.updateUserPvDesc(id, { pvDesc });
             if (!result) {
                 return res.status(500).json({
                     ret: 1007,

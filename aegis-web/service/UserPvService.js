@@ -13,7 +13,6 @@ module.exports = {
         return UserPvModel.create({ aegis_id, userName, pvDesc });
     },
 
-
     async deleteUserPv(id) {
         return UserPvModel.destroy({
             where: { id }

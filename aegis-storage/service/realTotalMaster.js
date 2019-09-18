@@ -23,6 +23,5 @@ module.exports = {
         const index = id % clusterPool.length;
         const targetCluster = clusterPool[index];
         targetCluster.send({ id: id, data: data, type: "write" });
-
     },
 };
