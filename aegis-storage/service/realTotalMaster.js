@@ -30,7 +30,7 @@ setInterval(() => {
     errorMap = {};
 }, 60 * 1000);
 
-const checkMail = function (id) {
+const checkErrorCountAndSendMail = function (id) {
     if (!errorMap[id]) {
         errorMap[id] = 1;
     } else {
@@ -50,7 +50,7 @@ const checkMail = function (id) {
 
 module.exports = {
     increase: function (id, data) {
-        checkMail(id);
+        checkErrorCountAndSendMail(id);
         const index = id % clusterPool.length;
         const targetCluster = clusterPool[index];
         targetCluster.send({ id: id, data: data, type: "write" });

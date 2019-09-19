@@ -1,7 +1,9 @@
 const Sequelize = require('sequelize');
 const logger = require('log4js').getLogger();
 const userManageService = require('../../service/UserManageService');
+const UserApplyService = require('../../service/UserApplyService');
 const sendMail = require('../../utils/email_tof');
+const { TOF_CONTANT, TOF_TITLE, TOF_SUBTITLE, TOF_MSGINFO } = require('../../constants');
 
 function responseError(res, error, fallbackMsg) {
     let errMsg = fallbackMsg;
@@ -36,6 +38,31 @@ function assembleWhere(conditions) {
     })
 
     return where;
+}
+
+/**
+ * 发送授权成功消息
+ * @param {用户rtx} rtx 
+ */
+function sendVerifyMail(rtx) {
+    sendMail({
+        userList: [rtx],
+        title: TOF_TITLE,
+        subtitle: TOF_SUBTITLE,
+        content: TOF_CONTANT,
+        msgInfo: TOF_MSGINFO
+    });
+}
+
+function addDemoProject(userName) {
+    logger.info(`${userName} verified`);
+    new UserApplyService().add({userName, applyId: global.pjConfig.demoProjectId}, function (err, user, items) {
+        if (error) {
+            logger.info('add demo project error');
+        } else {
+            logger.info('add demo project error');
+        }
+    });
 }
 
 module.exports = {
@@ -86,13 +113,10 @@ module.exports = {
                 verify_state
             });
             if (verify_state === '2' && !!email) {
-                const content = [
-                    { 'type': 'h1', 'text': '提高开发质量，守护项目健康' },
-                    { 'type': 'p', 'text': '打开 aegis.oa.com 了解如何接入' },
-                    { 'type': 'p', 'text': '打开 aegis.ivweb.io 查看项目信息' },
-                    { 'type': 'line' }
-                ];
-                sendMail({ userList: [chineseName], title: 'aegis 权限审批通过', subtitle: '感谢您使用 aegis 前端监控平台', content, msgInfo: 'aegis 权限审批通过, 感谢您使用 aegis 前端监控平台' });
+                // 授权成功后给用户发消息
+                sendVerifyMail(chineseName);
+                // 添加默认demo项目
+                addDemoProject(chineseName);
             }
             if (!result) {
                 return res.status(200).json({
