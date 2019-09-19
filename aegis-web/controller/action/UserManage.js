@@ -4,7 +4,7 @@ const userManageService = require('../../service/UserManageService');
 const UserApplyService = require('../../service/UserApplyService');
 const sendMail = require('../../utils/email_tof');
 const { TOF_CONTANT, TOF_TITLE, TOF_SUBTITLE, TOF_MSGINFO } = require('../../constants');
-
+const path = require('path');
 global.pjConfig = require(path.join(__dirname, '../../', 'project.json'));
 
 function responseError(res, error, fallbackMsg) {
