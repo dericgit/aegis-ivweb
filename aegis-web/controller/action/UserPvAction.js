@@ -20,7 +20,7 @@ module.exports = {
             const pickResults = findResults.rows.map(item => item.dataValues);
             res.json({
                 ret: 0,
-                result: { total: findResults.count, offset, limit, data: pickResults }
+                result: { total: findResults.count, data: pickResults }
             });
         } catch (error) {
             res.status(500).json({
