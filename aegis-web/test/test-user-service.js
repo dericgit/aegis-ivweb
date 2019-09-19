@@ -4,10 +4,6 @@ const pjConfig = require('../project.json');
 
 global.pjConfig = pjConfig;
 
-console.log(pjConfig);
-
-console.log(global.pjconfig)
-
 const UserPvService = require('../service/UserPvService');
 
 global.DEBUG = true;
@@ -15,7 +11,7 @@ global.DEBUG = true;
 
 const mysqlUrl = pjConfig.mysql.url;
 
-orm.connect(mysqlUrl, function (err, db) {
+orm.connect(mysqlUrl, async function (err, db) {
     if (err) {
         throw err;
     }
@@ -29,11 +25,8 @@ orm.connect(mysqlUrl, function (err, db) {
         db: db
     }
 
-    var us = new UserPvService();
-
-    us.findBatchPv({ where: { id: 582 } }, function (err, data) {
-        console.log(data)
-    })
+    const res = await UserPvService.findBatchPv({ where: { aegis_id: 582 } })
+    console.log(res.rows);
 
 });
 

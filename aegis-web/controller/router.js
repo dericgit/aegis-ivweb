@@ -13,6 +13,7 @@ const StatisticsAction = require('./action/StatisticsAction');
 const ApproveAction = require('./action/ApproveAction');
 const realtimeService = require('../service/RealtimeService');
 const UserApplyAction = require('./action/UserApplyAction');
+const UserPvAction = require('./action/UserPvAction');
 const pluginHandler = require('../workflow/PluginWorker');
 const ApiRouter = require('./api');
 const StaticServe = require('./static-serve');
@@ -129,6 +130,9 @@ module.exports = function(app) {
                     break;
                 case 'userApply':
                     UserApplyAction[operation](params, req, res);
+                    break;
+                case 'userPv':
+                    UserPvAction[operation](params, req, res);
                     break;
                 case 'statistics':
                     StatisticsAction[operation](params, req, res);

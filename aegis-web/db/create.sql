@@ -219,8 +219,8 @@ DROP TABLE IF EXISTS `b_user_pv`;
 CREATE TABLE `b_user_pv` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `aegis_id` int(11) NOT NULL,
-  `userName` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
-  `createTime` datetime DEFAULT CURRENT_TIMESTAMP,
-  `pvDesc` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
+  `user_name` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  `pv_desc` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

@@ -17,7 +17,11 @@ module.exports = {
                     aegis_id
                 }
             });
-            console.log(findResults);
+            const pickResults = findResults.rows.map(item => item.dataValues);
+            res.json({
+                ret: 0,
+                result: { total: findResults.count, offset, limit, data: pickResults }
+            });
         } catch (error) {
             res.status(500).json({
                 ret: 1000,

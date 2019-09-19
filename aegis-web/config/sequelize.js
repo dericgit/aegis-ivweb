@@ -1,4 +1,8 @@
 const Sequelize = require('sequelize');
+const path = require('path');
+
+global.pjconfig = require(path.join(__dirname, "..", 'project.json'));
+
 const mysqlUrl = global.pjconfig.mysql.url;
 
 const sequelizeOptions = {
@@ -10,7 +14,7 @@ const sequelizeOptions = {
     },
     define: {
         // The `timestamps` field specify whether or not the `createdAt` and `updatedAt` fields will be created.
-        timestamps: true,
+        timestamps: false,
         freezeTableName: true,
         underscored: true
     },

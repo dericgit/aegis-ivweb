@@ -5,8 +5,8 @@ const UserPvModel = require('../model/UserPv.js');
 
 module.exports = {
 
-    async findBatchPv({ where = {}, order, limit, offset = 0 }) {
-        return UserPvModel.findAndCountAll({ where, order, limit, offset });
+    async findBatchPv({ where = {}, order, limit = 10, offset = 0 }) {
+        return await UserPvModel.findAndCountAll({ where, order, limit, offset });
     },
 
     async addUserPv({aegis_id, userName, pvDesc}) {
