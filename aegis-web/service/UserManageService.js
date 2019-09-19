@@ -8,7 +8,7 @@ module.exports = {
      * @param {number} offset
      */
     async getList({ where = {}, order, limit = 10, offset = 0 }) {
-        return userManageModal.findAndCountAll({ where, ordre, limit, offset });
+        return userManageModal.findAndCountAll({ where, order, limit, offset });
     },
 
     /**
