@@ -14,6 +14,7 @@ var StatisticsService = require('./StatisticsService');
 var scoreLib = require('../lib/getScore.js');
 var sendEmail = require('../utils/ivwebMail');
 var sendApplyEmail = require('../utils/ivwebMail_for_single');
+var sendTofEmail = require('../utils/email_tof');
 
 var DAY_LENGTH = 30;
 
@@ -286,14 +287,21 @@ EmailService.prototype = {
     },
     sendApplySuccessEmail: function (user, loginUser, items) {
         this.date = new Date();
-        sendApplyEmail(
-            this.from,
-            [user.email],
-            [loginUser.email],
-            "【Aegis 授权成功 " + dateFormat(this.date, "yyyy-MM-dd hh:mm:ss") + "】",
-            '<html><h3>用户 ' + user.loginName + ' 申请的 Aegis-id：' + items.applyId + ' 授权成功</h3></html>',
-            false
-        );
+        sendTofEmail({
+            userList: [user.loginName, loginUser.loginName],
+            title: '【Aegis 授权成功 ' + dateFormat(this.date, 'yyyy-MM-dd hh:mm:ss') + '】',
+            subtitle: '用户 ' + user.loginName + ' 申请的 Aegis-id：' + items.applyId + ' 授权成功',
+            content: [],
+            msgInfo: '用户 ' + user.loginName + ' 申请的 Aegis-id：' + items.applyId + ' 授权成功'
+        });
+        // sendApplyEmail(
+        //     this.from,
+        //     [user.email],
+        //     [loginUser.email],
+        //     "【Aegis 授权成功 " + dateFormat(this.date, "yyyy-MM-dd hh:mm:ss") + "】",
+        //     '<html><h3>用户 ' + user.loginName + ' 申请的 Aegis-id：' + items.applyId + ' 授权成功</h3></html>',
+        //     false
+        // );
     },
     start: function () {
         var that = this;
