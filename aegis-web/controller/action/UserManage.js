@@ -5,6 +5,8 @@ const UserApplyService = require('../../service/UserApplyService');
 const sendMail = require('../../utils/email_tof');
 const { TOF_CONTANT, TOF_TITLE, TOF_SUBTITLE, TOF_MSGINFO } = require('../../constants');
 
+global.pjConfig = require(path.join(__dirname, '../../', 'project.json'));
+
 function responseError(res, error, fallbackMsg) {
     let errMsg = fallbackMsg;
     if (error) {
@@ -56,13 +58,15 @@ function sendVerifyMail(rtx) {
 
 function addDemoProject(userName) {
     logger.info(`${userName} verified`);
-    new UserApplyService().add({userName, applyId: global.pjConfig.demoProjectId}, function (err, user, items) {
-        if (error) {
-            logger.info('add demo project error');
-        } else {
-            logger.info('add demo project error');
-        }
-    });
+    if (global.pjConfig.demoProjectId) {
+        new UserApplyService().add({userName, applyId: global.pjConfig.demoProjectId}, function (error, user, items) {
+            if (error) {
+                logger.info('add demo project error');
+            } else {
+                logger.info('add demo project error');
+            }
+        });
+    }
 }
 
 module.exports = {
