@@ -165,7 +165,7 @@ router.get('/:id/:type', (req, res) => {
         }
         case 'performance': {
             model = models.Performance;
-            attributes = ['content_download', 'create_time', 'dns_lookup', 'dom_parse', 'id', 'resource_download', 'ssl', 'tcp', 'times', 'ttfb']
+            attributes = ['content_download', 'create_time', 'dns_lookup', 'dom_parse', 'id', 'resource_download', 'ssl', 'tcp', 'times', 'ttfb', 'first_screen_timing']
             break;
         }
         default: {

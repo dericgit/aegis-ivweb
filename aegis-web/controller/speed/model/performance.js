@@ -43,6 +43,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false
         },
+        first_screen_timing: {
+            type: DataTypes.FLOAT,
+            allowNull: true
+        },
         create_time: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW
